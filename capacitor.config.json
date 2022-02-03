@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "mykanban",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

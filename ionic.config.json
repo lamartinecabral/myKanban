@@ -1,0 +1,7 @@
+{
+  "name": "mykanban",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
