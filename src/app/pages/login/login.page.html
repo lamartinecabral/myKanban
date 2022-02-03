@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Kanban</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div *ngIf="mode === 'login'" class="form login">
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <ion-item>
+        <ion-label position="floating">E-mail</ion-label>
+        <ion-input formControlName="email" type="email"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Senha</ion-label>
+        <ion-input formControlName="password" type="password"></ion-input>
+      </ion-item>
+      <ion-button type="submit" expand="block" [disabled]="loginForm.invalid">
+        Entrar
+      </ion-button>
+      <ion-button (click)="toggleMode()" fill="clear" expand="block">
+        Novo usuário
+      </ion-button>
+    </form>
+  </div>
+
+  <div *ngIf="mode === 'create'" class="form create">
+    <form [formGroup]="createForm" (ngSubmit)="create()">
+      <ion-item>
+        <ion-label position="floating">E-mail</ion-label>
+        <ion-input formControlName="email" type="email"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Senha</ion-label>
+        <ion-input formControlName="password" type="password"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Confirme a senha</ion-label>
+        <ion-input formControlName="confirm" type="password"></ion-input>
+      </ion-item>
+      <ion-button type="submit" expand="block" [disabled]="createForm.invalid">
+        Cadastrar
+      </ion-button>
+      <ion-button (click)="toggleMode()" fill="clear" expand="block">
+        Já tenho cadastro
+      </ion-button>
+    </form>
+  </div>
+
+</ion-content>
