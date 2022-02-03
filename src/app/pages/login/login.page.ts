@@ -40,7 +40,6 @@ export class LoginPage implements OnInit {
         console.error(res.error.message);
         this.toast(res.error.message);
       } else {
-        console.log(res.user);
         this.router.navigateByUrl('',{replaceUrl: true});
       }
     })
@@ -59,7 +58,6 @@ export class LoginPage implements OnInit {
         console.error(res.error.message);
         this.toast(res.error.message);
       } else {
-        console.log(res.user);
         this.router.navigateByUrl('',{replaceUrl: true});
       }
     })

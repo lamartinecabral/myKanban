@@ -4,7 +4,7 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 import { config, environment } from './environments/environment';
 // import { initializeApp } from "firebase/app";
-import * as firebase from "firebase/app";
+import { initializeApp } from "firebase/app";
 
 if (environment.production) {
   enableProdMode();
@@ -16,7 +16,7 @@ if (environment.production) {
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Initialize Firebase
-firebase.initializeApp(config.firebase);
+initializeApp(config.firebase);
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.log(err));

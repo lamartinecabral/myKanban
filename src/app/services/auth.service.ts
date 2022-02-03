@@ -18,6 +18,7 @@ export class AuthService {
         // https://firebase.google.com/docs/reference/js/firebase.User
         const uid = user.uid;
         // ...
+        console.log(user.email, user.uid);
         this.user$.next(user);
       } else {
         // User is signed out
