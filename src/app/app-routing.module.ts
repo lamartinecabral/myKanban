@@ -10,16 +10,22 @@ const routes: Routes = [
     canActivate: [RootGuard],
   },
   {
-    path: 'home',
+    path: 'login',
+    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule),
+    canActivate: [LogGuard],
+    data: {user: false}
+  },
+  {
+    path: 'boards',
     loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule),
     canActivate: [LogGuard],
     data: {user: true}
   },
   {
-    path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule),
+    path: 'boards/:id',
+    loadChildren: () => import('./pages/board/board.module').then( m => m.BoardPageModule),
     canActivate: [LogGuard],
-    data: {user: false}
+    data: {user: true}
   },
 ];
 

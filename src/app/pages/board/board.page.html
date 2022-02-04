@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="boards"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{board?.data?.name}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="deleteBoard()" fill="solid" color="danger">
+        Excluir Board
+        <ion-icon slot="end" name="trash"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+</ion-content>

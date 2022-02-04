@@ -19,10 +19,12 @@ export class AuthService {
         const uid = user.uid;
         // ...
         console.log(user.email, user.uid);
+        this.user = user;
         this.user$.next(user);
       } else {
         // User is signed out
         // ...
+        this.user = null;
         this.user$.next(null);
       }
     });

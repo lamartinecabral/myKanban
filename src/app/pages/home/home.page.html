@@ -2,6 +2,10 @@
   <ion-toolbar color="primary">
     <ion-title>Kanban</ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="newBoard()">
+        Novo Board
+        <ion-icon slot="end" name="add"></ion-icon>
+      </ion-button>
       <ion-button (click)="logout()">
         Sair
         <ion-icon slot="end" name="exit"></ion-icon>
@@ -11,5 +15,12 @@
 </ion-header>
 
 <ion-content>
-  
+  <div class="flex wrap ion-padding">
+    <ion-card *ngFor="let board of boards" class="board" tappable (click)="open(board.id)">
+      <div class="boardimg"><div></div><div></div></div>
+      <ion-card-header>
+        <ion-card-title>{{board.data.name | titlecase}}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+  </div>
 </ion-content>

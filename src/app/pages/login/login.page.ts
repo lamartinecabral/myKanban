@@ -78,14 +78,18 @@ export class LoginPage implements OnInit {
   loginValidator: ValidatorFn = (group: AbstractControl):  ValidationErrors | null => { 
     let email = group.get('email').value;
     let password = group.get('password').value
-    return email && password ? null : { invalid: true };
+    return email && password ?
+      null :
+      { invalid: true };
   }
 
   createValidator: ValidatorFn = (group: AbstractControl):  ValidationErrors | null => { 
     let email = group.get('email').value;
     let password = group.get('password').value;
     let confirm = group.get('confirm').value;
-    return email && password && password === confirm ? null : { invalid: true };
+    return email && password && password === confirm ?
+      null :
+      { invalid: true };
   }
 
   async toast(message){

@@ -16,7 +16,7 @@ export class RootGuard implements CanActivate {
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     return this.auth.user$.pipe(mergeMap((user)=>{
       if(user){
-        this.router.navigateByUrl('home',{replaceUrl: true});
+        this.router.navigateByUrl('boards',{replaceUrl: true});
       } else {
         this.router.navigateByUrl('login',{replaceUrl: true});
       }

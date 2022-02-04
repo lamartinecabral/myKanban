@@ -1,27 +1,26 @@
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+.board{
+  --size: 15em;
+  width: var(--size);
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
+.boardimg{
+  background: var(--ion-color-primary);
+  height: calc(var(--size) * 0.8);
+  display: flex;
+  div:nth-child(1){
+    background: white;
+    position: relative;
+    top: calc(var(--size) * 0.1);
+    left: calc(var(--size) * 0.1);
+    width: calc(var(--size) * 0.35);
+    height: calc(var(--size) * 0.35);
+  }
+  div:nth-child(2){
+    background: white;
+    position: relative;
+    top: calc(var(--size) * 0.1);
+    left: calc(var(--size) * 0.2);
+    width: calc(var(--size) * 0.35);
+    height: calc(var(--size) * 0.6);
+  }
 }

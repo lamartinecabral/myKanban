@@ -9,6 +9,23 @@
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
 
+.flex{
+  display: flex;
+}
+.hcenter{
+  justify-content: center;
+}
+.vcenter{
+  align-items: center;
+}
+.center{
+  justify-content: center;
+  align-items: center;
+}
+.wrap{
+  flex-wrap: wrap;
+}
+
 /* Core CSS required for Ionic components to work properly */
 @import "~@ionic/angular/css/core.css";
 
