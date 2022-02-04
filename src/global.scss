@@ -25,6 +25,15 @@
 .wrap{
   flex-wrap: wrap;
 }
+.overflow-x{
+  overflow-x: auto;
+}
+.vfull{
+  height: 100%;
+}
+.hfit-content{
+  width: fit-content;
+}
 
 /* Core CSS required for Ionic components to work properly */
 @import "~@ionic/angular/css/core.css";
