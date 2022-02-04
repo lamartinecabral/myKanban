@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
-import { addDoc, collection, doc, getFirestore, onSnapshot, query, updateDoc, where, WriteBatch, writeBatch } from "firebase/firestore"
+import { addDoc, collection, doc, getFirestore, onSnapshot, query, runTransaction, updateDoc, where, WriteBatch, writeBatch } from "firebase/firestore"
 import { Board } from 'src/app/utils/interfaces';
 
 @Component({
@@ -90,7 +90,8 @@ export class HomePage {
       });
       this.boards.sort((a,b)=>b.data.index-a.data.index);
       console.log(this.boards);
-
+      
+      if(querySnapshot.metadata.fromCache) return;
       this.checkIndexes();
     })
   }
@@ -112,7 +113,9 @@ export class HomePage {
         );
       }
     }
-    if(batch) await batch.commit();
+    if(batch){
+      await batch.commit();
+    }
   }
 
 }

@@ -1,0 +1,21 @@
+.column{
+  width: 15em;
+  .head{
+    background: rgba(var(--ion-color-primary-rgb), calc(6/10));
+    color: var(--ion-color-primary-contrast);
+    border: 2px solid white;
+    text-align: center;
+  }
+  ion-card{
+    ion-card-content{
+      font-family: monospace;
+      font-size: 1.4em;
+    }
+    ion-button{
+      position: relative;
+    }
+  }
+  .button{
+    text-align: center;
+  }
+}

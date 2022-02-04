@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="boards"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{board?.data?.name}}</ion-title>
+    <ion-title>{{board?.data?.name | titlecase}}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="deleteBoard()" fill="solid" color="danger">
         Excluir Board
@@ -14,5 +14,33 @@
 </ion-header>
 
 <ion-content>
-
+  <div class="flex ion-padding">
+    <div class="column" *ngFor="let column of columns; let i = index">
+      <div class="head ion-padding">
+        <b>{{column.data.name}}</b>
+      </div>
+      <ion-card *ngFor="let card of cards[column.id]; let j = index">
+        <ion-card-content>{{card.data.text}}</ion-card-content>
+        <div class="arrows"></div>
+        <ion-button fill="clear" (click)="moveCard(i,j,-1)" [disabled]="i === 0">
+          <ion-icon slot="icon-only" name="chevron-back-outline" size="small"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="moveCard(i,j,+1)" [disabled]="i === columns.length-1">
+          <ion-icon slot="icon-only" name="chevron-forward-outline" size="small"></ion-icon>
+        </ion-button>
+      </ion-card>
+      <div class="button">
+        <ion-button (click)="newCard(column)">
+          Novo Card
+          <ion-icon slot="end" name="add"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+    <div class="ion-padding">
+      <ion-button (click)="newColumn()" fill="outline">
+        Nova Coluna
+        <ion-icon slot="end" name="add"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
 </ion-content>

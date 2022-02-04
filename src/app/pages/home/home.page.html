@@ -1,8 +1,8 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Kanban</ion-title>
+    <ion-title>Kanban ({{auth?.user?.email}})</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="newBoard()">
+      <ion-button (click)="newBoard()" fill="outline">
         Novo Board
         <ion-icon slot="end" name="add"></ion-icon>
       </ion-button>
