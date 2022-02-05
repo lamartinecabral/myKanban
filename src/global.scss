@@ -34,6 +34,16 @@
 .hfit-content{
   width: fit-content;
 }
+[hoverlight]{
+  :hover{
+    background-color: rgba(var(--ion-color-light-rgb),0.25);
+  }
+}
+[hoverdark]{
+  :hover{
+    background-color: rgba(var(--ion-color-dark-rgb),0.25);
+  }
+}
 
 /* Core CSS required for Ionic components to work properly */
 @import "~@ionic/angular/css/core.css";

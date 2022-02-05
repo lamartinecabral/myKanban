@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{colId}/{docId} {
+
+      allow read, write: if 
+        colId in ['boards','columns','cards','comments'] &&
+        request.auth != null
+
+    }
+  }
+}

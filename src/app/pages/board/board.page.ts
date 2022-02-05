@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { addDoc, collection, deleteDoc, doc, getFirestore, onSnapshot, query, where, writeBatch, WriteBatch, updateDoc } from 'firebase/firestore';
+import * as firestore from 'firebase/firestore';
 import { AuthService } from 'src/app/services/auth.service';
 import { Board, Column, Card } from 'src/app/utils/interfaces';
 
@@ -41,29 +41,41 @@ export class BoardPage implements OnInit {
     this.getColumns(this.route.snapshot.params.id);
   }
 
+  async updateDocum(d: {id: string, data: any}, col: string){
+    const {getFirestore,updateDoc,doc} = firestore;
+    const db = getFirestore();
+    try {
+      await updateDoc(doc(db, col, d.id), d.data);
+      console.log("Document updated:", d);
+    } catch (e) {
+      console.error("Error updating document:", e);
+    }
+  }
+
+  // MOVE METHODS
+
   moveCard(col_index: number, card_index: number, increment: number){
     let fromColumn = this.columns[col_index];
     let card = this.cards[fromColumn.id][card_index];
     let toColumn = this.columns[col_index + increment];
     card.data.column_id = toColumn.id
-    this.updateCard({
+    this.updateDocum({
       id: card.id,
       data:{
         column_id: toColumn.id,
         index: this.cards[toColumn.id].length,
       }
-    })
+    }, 'cards')
   }
 
-  async updateCard(card: Card){
-    console.log(card);
-    const db = getFirestore();
-    try {
-      await updateDoc(doc(db, "cards", card.id), card.data);
-      console.log("Document written with ID: ", card.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
+  moveColumn(col_index: number, increm: number){
+    let column = this.columns[col_index];
+    this.updateDocum({
+      id: column.id,
+      data:{
+        index: firestore.increment(increm * 1.5),
+      }
+    }, 'columns')
   }
 
   // NEW METHODS
@@ -96,6 +108,7 @@ export class BoardPage implements OnInit {
   // GET METHODS
 
   getBoard(id: string){
+    const {getFirestore,onSnapshot,doc} = firestore;
     const db = getFirestore();
     this.unsubscribeBoard = onSnapshot(doc(db, 'boards', id), (doc)=>{
       this.board = {id: doc.id, data: doc.data()}
@@ -103,14 +116,15 @@ export class BoardPage implements OnInit {
   }
 
   getColumns(id: string){
+    const {getFirestore,query,collection,where,onSnapshot} = firestore;
     const db = getFirestore();
     const q = query(collection(db, "columns"), where("board_id", "==", id));
     this.unsubscribeColumns = onSnapshot(q, (querySnapshot)=>{
       this.columns = querySnapshot.docs.map(doc=>{
         return {id: doc.id, data: doc.data()};
-      });
+      })
       this.columns.sort((a,b)=>a.data.index-b.data.index);
-      console.log(this.columns);
+      // console.log(this.columns);
       this.columns.forEach(column=>{
         if(!this.unsubscribeCards[column.id]) this.getCards(column);
       })
@@ -122,14 +136,15 @@ export class BoardPage implements OnInit {
   }
 
   getCards(column: Column){
+    const {getFirestore,query,collection,where,onSnapshot} = firestore;
     const db = getFirestore();
     const q = query(collection(db, "cards"), where("column_id", "==", column.id));
     this.unsubscribeCards[column.id] = onSnapshot(q, (querySnapshot)=>{
       this.cards[column.id] = querySnapshot.docs.map(doc=>{
         return {id: doc.id, data: doc.data()};
-      });
+      })
       this.cards[column.id].sort((a,b)=>a.data.index-b.data.index);
-      console.log("Cards "+column.data.name, this.cards[column.id]);
+      // console.log("Cards "+column.data.name, this.cards[column.id]);
 
       if(querySnapshot.metadata.fromCache) return;
       this.checkIndexes(this.cards[column.id], 'cards');
@@ -139,50 +154,80 @@ export class BoardPage implements OnInit {
   // CREATE METHODS
 
   async createColumn(column: Column){
+    this.createDoc((column as any), 'columns')
+  }
+
+  async createCard(card: Card){
+    this.createDoc((card as any), 'cards')
+  }
+
+  async createDoc(docum: {data: any}, col: string){
+    const {getFirestore,addDoc,collection} = firestore;
     const db = getFirestore();
     try {
-      const docRef = await addDoc(collection(db, "columns"), column.data);
-      console.log("Document written with ID: ", docRef.id);
+      const docRef = await addDoc(collection(db, col), docum.data);
+      console.log("Document created with ID: ", docRef.id, docum.data);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   }
 
-  async createCard(card: Card){
-    const db = getFirestore();
-    try {
-      const docRef = await addDoc(collection(db, "cards"), card.data);
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
+  // EDIT METHODS
+
+  async editColumn(column: Column){
+    const name = await this.alertInput("Escolha um novo nome para a Coluna");
+    if(name === "") return;
+    this.updateDocum({
+      id: column.id,
+      data: { name: name }
+    }, 'columns');
+  }
+
+  async editCard(card: Card){
+    const text = await this.alertInput("Digite o novo texto do Card");
+    if(text === "") return;
+    this.updateDocum({
+      id: card.id,
+      data: { text: text }
+    }, 'cards');
+  }
+
+  async editBoard(){
+    const name = await this.alertInput("Escolha um novo nome para o Board");
+    if(name === "") return;
+    this.updateDocum({
+      id: this.board.id,
+      data: { name: name }
+    }, 'boards');
   }
 
   // DELETE METHODS
 
   async deleteBoard(){
-    const answer = await this.alertConfirm("Tem certeza que deseja excluir esse Board?")
-    if(!answer) return;
-    
-    const db = getFirestore();
-    await deleteDoc(doc(db, "boards", this.board.id));
+    await this.removeDoc(this.board.id, 'boards', "Tem certeza que deseja excluir esse Board?")
     this.router.navigateByUrl('boards');
   }
 
-  async deleteColumn(id){
-    const answer = await this.alertConfirm("Tem certeza que deseja excluir essa Coluna?")
-    if(!answer) return;
-    
-    const db = getFirestore();
-    await deleteDoc(doc(db, "columns", id));
+  deleteColumn(id){
+    this.removeDoc(id, 'columns', "Tem certeza que deseja excluir essa Coluna?")
   }
 
-  async deleteCard(id){
-    const answer = await this.alertConfirm("Tem certeza que deseja excluir esse Card?")
+  deleteCard(id){
+    this.removeDoc(id, 'cards', "Tem certeza que deseja excluir esse Card?")
+  }
+
+  async removeDoc(id: string, col: string, confirmMessage: string){
+    const answer = await this.alertConfirm(confirmMessage);
     if(!answer) return;
     
+    const {getFirestore,deleteDoc,doc} = firestore;
     const db = getFirestore();
-    await deleteDoc(doc(db, "cards", id));
+    try {
+      await deleteDoc(doc(db, col, id));
+      console.log("Document deleted with ID:", `${col}/${id}`);
+    } catch (e) {
+      console.error("Error deleting document: ", e);
+    }
   }
 
   // ALERT METHODS
@@ -227,8 +272,9 @@ export class BoardPage implements OnInit {
   // OTHER METHODS
 
   async checkIndexes(array: any[], col_name: string){
+    const {getFirestore,writeBatch,doc} = firestore;
     const db = getFirestore();
-    let batch: WriteBatch;
+    let batch: firestore.WriteBatch;
     for(let i=0; i<array.length; i++){
       if(array[i].data.index === i) continue;
       if(!batch) batch = writeBatch(db);
@@ -238,6 +284,7 @@ export class BoardPage implements OnInit {
   }
   
   async initColumns(){
+    const {getFirestore,writeBatch,doc,collection} = firestore;
     const db = getFirestore();
     const batch = writeBatch(db);
     ['TO DO', 'DOING', 'DONE'].map((name,index)=>{

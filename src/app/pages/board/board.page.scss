@@ -4,12 +4,22 @@
   overflow: auto;
 }
 .column{
-  width: 15em;
+  width: 17em;
   .head{
     background: rgba(var(--ion-color-primary-rgb), calc(6/10));
     color: var(--ion-color-primary-contrast);
     border: 2px solid white;
     text-align: center;
+    .edit-buttons{
+      position: relative;
+      justify-content: space-between;
+      ion-button{
+        --padding-start: 0;
+        --padding-end: 0;
+        --padding-top: 0;
+        --padding-bottom: 0;
+      }
+    }
   }
   ion-card{
     ion-card-content{
@@ -22,5 +32,13 @@
   }
   .button{
     text-align: center;
+  }
+  .edit-buttons{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    ion-button{
+      --background-hover-opacity: 0.3;
+    }
   }
 }

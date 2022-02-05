@@ -3,7 +3,11 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="boards"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{board?.data?.name | titlecase}}</ion-title>
+    <ion-title hoverlight>
+      <span tappable (click)="editBoard()">
+        {{board?.data?.name | titlecase}}
+      </span>
+    </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="deleteBoard()" fill="solid" color="danger">
         Excluir Board
@@ -16,33 +20,70 @@
 <ion-content>
   <div class="content">
     <div class="flex ion-padding hfit-content">
+
+      <!-- INICIO DA COLUNA -->
       <div class="column" *ngFor="let column of columns; let i = index">
-        <div class="head ion-padding">
-          <b>{{column.data.name}}</b>
+
+        <div class="head">
+          <div class="edit-buttons">
+            <span>
+              <ion-button fill="clear" color="light" (click)="deleteColumn(column.id)" [disabled]="columns.length === 1" size="small">
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+              </ion-button>
+            </span>
+
+            <span hoverlight><b tappable (click)="editColumn(column)">
+              {{column.data.name | uppercase}}
+            </b></span>
+
+            <span>
+              <ion-button fill="clear" color="light" (click)="moveColumn(i,-1)" [disabled]="i === 0" size="small">
+                <ion-icon slot="icon-only" name="chevron-back"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="light" (click)="moveColumn(i,+1)" [disabled]="i === columns.length-1" size="small">
+                <ion-icon slot="icon-only" name="chevron-forward"></ion-icon>
+              </ion-button>
+            </span>
+          </div>
         </div>
+
+        <!-- INICIO DO CARD -->
         <ion-card *ngFor="let card of cards[column.id]; let j = index">
-          <ion-card-content>{{card.data.text}}</ion-card-content>
-          <div class="arrows"></div>
-          <ion-button fill="clear" (click)="moveCard(i,j,-1)" [disabled]="i === 0">
-            <ion-icon slot="icon-only" name="chevron-back-outline" size="small"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" (click)="moveCard(i,j,+1)" [disabled]="i === columns.length-1">
-            <ion-icon slot="icon-only" name="chevron-forward-outline" size="small"></ion-icon>
-          </ion-button>
+          <ion-card-content tappable (click)="editCard(card)">{{card.data.text}}</ion-card-content>
+
+          <!-- botoes de alterar card -->
+          <div class="edit-buttons">
+            <ion-button fill="clear" color="danger" (click)="deleteCard(card.id)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" (click)="moveCard(i,j,-1)" [disabled]="i === 0">
+              <ion-icon slot="icon-only" name="chevron-back"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" (click)="moveCard(i,j,+1)" [disabled]="i === columns.length-1">
+              <ion-icon slot="icon-only" name="chevron-forward"></ion-icon>
+            </ion-button>
+          </div>
+
         </ion-card>
+        <!-- FIM DO CARD -->
+
         <div class="button">
           <ion-button (click)="newCard(column)">
             Novo Card
             <ion-icon slot="end" name="add"></ion-icon>
           </ion-button>
         </div>
+
       </div>
+      <!-- FIM DA COLUNA -->
+
       <div class="ion-padding">
         <ion-button (click)="newColumn()" fill="outline">
           Nova Coluna
           <ion-icon slot="end" name="add"></ion-icon>
         </ion-button>
       </div>
+
     </div>
   </div>
 </ion-content>

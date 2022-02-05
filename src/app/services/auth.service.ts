@@ -14,6 +14,7 @@ export class AuthService {
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log("User is signed in");
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
         const uid = user.uid;
@@ -22,6 +23,7 @@ export class AuthService {
         this.user = user;
         this.user$.next(user);
       } else {
+        console.log("User is signed out");
         // User is signed out
         // ...
         this.user = null;

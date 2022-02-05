@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
-import { addDoc, collection, doc, getFirestore, onSnapshot, query, runTransaction, updateDoc, where, WriteBatch, writeBatch } from "firebase/firestore"
+import * as firestore from "firebase/firestore";
 import { Board } from 'src/app/utils/interfaces';
 
 @Component({
@@ -62,6 +62,7 @@ export class HomePage {
   }
 
   async createBoard(board: Board){
+    const {getFirestore,addDoc,collection} = firestore;
     const db = getFirestore();
     try {
       const docRef = await addDoc(collection(db, "boards"), board.data);
@@ -72,6 +73,7 @@ export class HomePage {
   }
 
   async updateBoard(board: Board){
+    const {getFirestore,updateDoc,doc} = firestore;
     const db = getFirestore();
     try {
       await updateDoc(doc(db, "boards", board.id), board.data);
@@ -82,6 +84,7 @@ export class HomePage {
   }
 
   getBoards(){
+    const {getFirestore,query,collection,where,onSnapshot} = firestore;
     const db = getFirestore();
     const q = query(collection(db, "boards"), where("uid", "==", this.auth.user.uid));
     this.unsubscribe = onSnapshot(q, (querySnapshot)=>{
@@ -89,7 +92,7 @@ export class HomePage {
         return {id: doc.id, data: doc.data()};
       });
       this.boards.sort((a,b)=>b.data.index-a.data.index);
-      console.log(this.boards);
+      // console.log(this.boards);
       
       if(querySnapshot.metadata.fromCache) return;
       this.checkIndexes();
@@ -102,8 +105,9 @@ export class HomePage {
   
   // busca e corrige inconsistencias nos indices
   async checkIndexes(){
+    const {getFirestore,writeBatch,doc} = firestore;
     const db = getFirestore();
-    let batch: WriteBatch;
+    let batch: firestore.WriteBatch;
     for(let i=0; i<this.boards.length; i++){
       if(this.boards[i].data.index !== this.boards.length-i-1){
         if(!batch) batch = writeBatch(db);
