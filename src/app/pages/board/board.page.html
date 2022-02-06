@@ -57,16 +57,16 @@
 
           <!-- botoes de alterar card -->
           <div class="edit-buttons">
-            <ion-button fill="clear" (click)="moveCard(i,j,-1)" [disabled]="i === 0">
+            <ion-button fill="clear" (click)="moveCard(i,j,-1)" [disabled]="i === 0" size="small">
               <ion-icon slot="icon-only" name="chevron-back"></ion-icon>
             </ion-button>
-            <ion-button fill="clear" color="danger" (click)="deleteCard(card.id)">
+            <ion-button fill="clear" color="danger" (click)="deleteCard(card.id)" size="small">
               <ion-icon slot="icon-only" name="trash"></ion-icon>
             </ion-button>
-            <ion-button fill="clear" (click)="openCard(card)">
+            <ion-button fill="clear" (click)="openCard(card)" size="small">
               <ion-icon slot="icon-only" name="create"></ion-icon>
             </ion-button>
-            <ion-button fill="clear" (click)="moveCard(i,j,+1)" [disabled]="i === columns.length-1">
+            <ion-button fill="clear" (click)="moveCard(i,j,+1)" [disabled]="i === columns.length-1" size="small">
               <ion-icon slot="icon-only" name="chevron-forward"></ion-icon>
             </ion-button>
           </div>

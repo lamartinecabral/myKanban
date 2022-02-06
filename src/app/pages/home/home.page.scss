@@ -1,6 +1,11 @@
-.board{
-  --size: 15em;
-  width: var(--size);
+.board-box{
+  padding: 0.5em;
+  .board{
+    --size: min(15em, calc(50vw - 1.5em));
+    width: 15em;
+    max-width: calc(50% - 1em);
+    margin: 0.5em;
+  }
 }
 
 .boardimg{
