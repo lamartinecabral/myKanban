@@ -10,7 +10,7 @@ Aplicação KanBan desenvolvida com as seguintes tecnologias/frameworks:
 - Angular 13
 - Firebase 9 (Authentication, Firestore, Hosting)
 
-# Install
+# Instalar e Executar
 
 Após copiar o repositório execute os seguintes comandos:
 
