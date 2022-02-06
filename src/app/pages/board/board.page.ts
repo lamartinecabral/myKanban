@@ -81,7 +81,7 @@ export class BoardPage implements OnInit {
   // NEW METHODS
 
   async newColumn(){
-    const name = await this.alertInput("Escolha um nome para a Coluna");
+    const name = await this.alertInput("Escolha um nome para o Status");
     if(name === "") return;
     this.createColumn({data: {
       name: name,
@@ -93,7 +93,7 @@ export class BoardPage implements OnInit {
   }
 
   async newCard(column: Column){
-    const text = await this.alertInput("Digite o texto do Card");
+    const text = await this.alertInput("Digite a descrição da Atividade");
     if(text === "") return;
     this.createCard({data: {
       text: text,
@@ -184,7 +184,7 @@ export class BoardPage implements OnInit {
   }
 
   async editCard(card: Card){
-    const text = await this.alertInput("Digite o novo texto do Card");
+    const text = await this.alertInput("Digite a nova descrição da Atividade");
     if(text === "") return;
     this.updateDocum({
       id: card.id,
@@ -209,11 +209,11 @@ export class BoardPage implements OnInit {
   }
 
   deleteColumn(id){
-    this.removeDoc(id, 'columns', "Tem certeza que deseja excluir essa Coluna?")
+    this.removeDoc(id, 'columns', "Tem certeza que deseja excluir esse Status?")
   }
 
   deleteCard(id){
-    this.removeDoc(id, 'cards', "Tem certeza que deseja excluir esse Card?")
+    this.removeDoc(id, 'cards', "Tem certeza que deseja excluir essa Atividade?")
   }
 
   async removeDoc(id: string, col: string, confirmMessage: string){
