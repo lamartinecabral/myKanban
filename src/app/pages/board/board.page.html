@@ -3,11 +3,9 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="boards"></ion-back-button>
     </ion-buttons>
-    <ion-title hoverlight>
-      <span tappable (click)="editBoard()">
-        {{board?.data?.name | titlecase}}
-      </span>
-    </ion-title>
+    <button (click)="editBoard()" hoverlight class="title">
+      <ion-title hoverlight>{{board?.data?.name | titlecase}}</ion-title>
+    </button>
     <ion-buttons slot="end">
       <ion-button (click)="deleteBoard()" fill="solid" color="danger">
         Excluir Projeto
@@ -32,9 +30,9 @@
               </ion-button>
             </span>
 
-            <span hoverlight><b tappable (click)="editColumn(column)">
-              {{column.data.name | uppercase}}
-            </b></span>
+            <button class="title" (click)="editColumn(column)" hoverlight>
+              <b>{{column.data.name | uppercase}}</b>
+            </button>
 
             <span>
               <ion-button fill="clear" color="light" (click)="moveColumn(i,-1)" [disabled]="i === 0" size="small">
@@ -49,15 +47,20 @@
 
         <!-- INICIO DO CARD -->
         <ion-card *ngFor="let card of cards[column.id]; let j = index">
-          <ion-card-content tappable (click)="openCard(card)">{{card.data.text | limit:40}}</ion-card-content>
+          <ion-card-content tappable (click)="openCard(card)">
+            {{(card.data.title || card.data.text) | limit:40}}
+          </ion-card-content>
 
           <!-- botoes de alterar card -->
           <div class="edit-buttons">
+            <ion-button fill="clear" (click)="moveCard(i,j,-1)" [disabled]="i === 0">
+              <ion-icon slot="icon-only" name="chevron-back"></ion-icon>
+            </ion-button>
             <ion-button fill="clear" color="danger" (click)="deleteCard(card.id)">
               <ion-icon slot="icon-only" name="trash"></ion-icon>
             </ion-button>
-            <ion-button fill="clear" (click)="moveCard(i,j,-1)" [disabled]="i === 0">
-              <ion-icon slot="icon-only" name="chevron-back"></ion-icon>
+            <ion-button fill="clear" (click)="openCard(card)">
+              <ion-icon slot="icon-only" name="create"></ion-icon>
             </ion-button>
             <ion-button fill="clear" (click)="moveCard(i,j,+1)" [disabled]="i === columns.length-1">
               <ion-icon slot="icon-only" name="chevron-forward"></ion-icon>

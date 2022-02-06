@@ -46,6 +46,15 @@ export class CardPage implements OnInit {
     })
   }
 
+  async editCardTitle(){
+    const title = await this.alertInput("Digite o novo título da Atividade");
+    if(title === "") return;
+    this.updateDocum({
+      id: this.card.id,
+      data: { title: title }
+    }, Card.col);
+  }
+
   timeoutId;
   textChange(){
     if(this.timeoutId) clearTimeout(this.timeoutId);

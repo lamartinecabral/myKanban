@@ -34,6 +34,7 @@ export class Card {
   static col = 'cards';
   id?: string;
   data?: {
+    title?: string,
     text?: string,
     uid?: string,
     board_id?: string,

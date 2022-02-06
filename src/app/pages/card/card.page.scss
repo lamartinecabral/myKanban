@@ -3,6 +3,12 @@ ion-title{
   overflow: hidden;
   text-overflow: ellipsis;
 }
+button.title{
+  background: none;
+  font-size: inherit;
+  text-align: inherit;
+  color: inherit;
+}
 .content{
   align-items: center;
   justify-content: center;

@@ -2,8 +2,10 @@
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button [defaultHref]="'boards/'+board_id"></ion-back-button>
-    </ion-buttons>
-    <ion-title>{{ card?.data?.text }}</ion-title>
+    </ion-buttons>    
+    <button (click)="editCardTitle()" hoverlight class="title">
+      <ion-title hoverlight>{{card?.data?.title || 'Sem título'}}</ion-title>
+    </button>
   </ion-toolbar>
 </ion-header>
 
@@ -16,6 +18,7 @@
         <textarea
           [(ngModel)]="text"
           (input)="textChange()"
+          placeholder="Digite aqui a descrição da Atividade..."
         ></textarea>
       </ion-card>
     </section>

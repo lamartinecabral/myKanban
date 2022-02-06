@@ -93,10 +93,10 @@ export class BoardPage implements OnInit {
   }
 
   async newCard(column: Column){
-    const text = await this.alertInput("Digite a descrição da Atividade");
-    if(text === "") return;
+    const title = await this.alertInput("Digite o título da Atividade");
+    if(title === "") return;
     this.createCard({data: {
-      text: text,
+      title: title,
       uid: this.auth.user.uid,
       board_id: this.board.id,
       column_id: column.id,
