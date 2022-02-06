@@ -7,13 +7,15 @@ ion-title{
   align-items: center;
   justify-content: center;
   min-height: 100%;
+  padding: 1rem 0;
+  > div{
+    justify-content: center;
+  }
 }
 
 section{
   width: 35em;
   max-width: 100vw;
-  height: 35em;
-  max-height: 80vh;
   .label{
     height: 2rem;
     display: flex;
@@ -26,6 +28,8 @@ section{
   }
 }
 section.one{
+  height: 35em;
+  max-height: 80vh;
   ion-card{
     height: calc(100% - 4rem);
     margin: 1rem;

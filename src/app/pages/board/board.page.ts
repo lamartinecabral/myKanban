@@ -175,7 +175,7 @@ export class BoardPage implements OnInit {
   // EDIT METHODS
 
   async editColumn(column: Column){
-    const name = await this.alertInput("Escolha um novo nome para a Coluna");
+    const name = await this.alertInput("Escolha um novo nome para o Status");
     if(name === "") return;
     this.updateDocum({
       id: column.id,
@@ -287,7 +287,7 @@ export class BoardPage implements OnInit {
     const {getFirestore,writeBatch,doc,collection} = firestore;
     const db = getFirestore();
     const batch = writeBatch(db);
-    ['TO DO', 'DOING', 'DONE'].map((name,index)=>{
+    ['A FAZER', 'FAZENDO', 'FEITO'].map((name,index)=>{
       return {data: {
         name: name,
         uid: this.auth.user.uid,
