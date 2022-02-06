@@ -12,9 +12,10 @@ Aplicação KanBan desenvolvida com as seguintes tecnologias/frameworks:
 
 # Instalar e Executar
 
-Após clonar o repositório execute os seguintes comandos:
+Após clonar o repositório execute os seguintes comandos dentro da pasta do projeto:
 
 ```
+npm install -g @ionic/cli
 npm install
 ionic serve
 ```
