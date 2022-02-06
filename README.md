@@ -12,7 +12,7 @@ Aplicação KanBan desenvolvida com as seguintes tecnologias/frameworks:
 
 # Instalar e Executar
 
-Após copiar o repositório execute os seguintes comandos:
+Após clonar o repositório execute os seguintes comandos:
 
 ```
 npm install
