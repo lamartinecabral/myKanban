@@ -4,7 +4,10 @@
       <ion-back-button [defaultHref]="'boards/'+board_id"></ion-back-button>
     </ion-buttons>    
     <button (click)="editCardTitle()" hoverlight class="title">
-      <ion-title hoverlight>{{card?.data?.title || 'Sem título'}}</ion-title>
+      <ion-title hoverlight>
+        {{card?.data?.title || 'Sem título'}}
+        <ion-icon name="create"></ion-icon>
+      </ion-title>
     </button>
   </ion-toolbar>
 </ion-header>

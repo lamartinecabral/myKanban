@@ -4,7 +4,10 @@
       <ion-back-button defaultHref="boards"></ion-back-button>
     </ion-buttons>
     <button (click)="editBoard()" hoverlight class="title">
-      <ion-title hoverlight>{{board?.data?.name | titlecase}}</ion-title>
+      <ion-title hoverlight>
+        {{board?.data?.name | titlecase}}
+        <ion-icon name="create"></ion-icon>
+      </ion-title>
     </button>
     <ion-buttons slot="end">
       <ion-button (click)="deleteBoard()" fill="solid" color="danger">
@@ -31,7 +34,8 @@
             </span>
 
             <button class="title" (click)="editColumn(column)" hoverlight>
-              <b>{{column.data.name | uppercase}}</b>
+              <b>{{column.data.name | uppercase}} </b>
+              <ion-icon name="create"></ion-icon>
             </button>
 
             <span>
