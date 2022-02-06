@@ -49,7 +49,7 @@
 
         <!-- INICIO DO CARD -->
         <ion-card *ngFor="let card of cards[column.id]; let j = index">
-          <ion-card-content tappable (click)="editCard(card)">{{card.data.text}}</ion-card-content>
+          <ion-card-content tappable (click)="openCard(card)">{{card.data.text | limit:40}}</ion-card-content>
 
           <!-- botoes de alterar card -->
           <div class="edit-buttons">

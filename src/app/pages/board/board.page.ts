@@ -301,5 +301,9 @@ export class BoardPage implements OnInit {
     await batch.commit();
   }
 
+  openCard(card: Card){
+    const board_id = this.route.snapshot.params.id;
+    this.router.navigateByUrl(`boards/${board_id}/${card.id}`);
+  }
 
 }

@@ -4,18 +4,18 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { BoardPageRoutingModule } from './board-routing.module';
+import { CardPageRoutingModule } from './card-routing.module';
 
-import { BoardPage } from './board.page';
-import { LimitPipe } from 'src/app/pipes/limit.pipe';
+import { CardPage } from './card.page';
+import { FnPipe } from 'src/app/pipes/fn.pipe';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    BoardPageRoutingModule
+    CardPageRoutingModule
   ],
-  declarations: [BoardPage, LimitPipe]
+  declarations: [CardPage,FnPipe]
 })
-export class BoardPageModule {}
+export class CardPageModule {}

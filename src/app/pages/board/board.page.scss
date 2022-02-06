@@ -8,7 +8,7 @@
   .head{
     background: rgba(var(--ion-color-primary-rgb), calc(6/10));
     color: var(--ion-color-primary-contrast);
-    border: 2px solid white;
+    border: 2px solid var(--ion-color-light);
     text-align: center;
     .edit-buttons{
       position: relative;

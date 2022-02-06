@@ -44,6 +44,9 @@
     background-color: rgba(var(--ion-color-dark-rgb),0.25);
   }
 }
+ion-content{
+  --background: var(--ion-color-light);
+}
 
 /* Core CSS required for Ionic components to work properly */
 @import "~@ionic/angular/css/core.css";

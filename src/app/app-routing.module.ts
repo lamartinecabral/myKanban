@@ -27,6 +27,12 @@ const routes: Routes = [
     canActivate: [LogGuard],
     data: {user: true}
   },
+  {
+    path: 'boards/:board_id/:id',
+    loadChildren: () => import('./pages/card/card.module').then( m => m.CardPageModule),
+    canActivate: [LogGuard],
+    data: {user: true}
+  },
 ];
 
 @NgModule({

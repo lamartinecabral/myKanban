@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="'boards/'+board_id"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ card?.data?.text }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="flex wrap content">
+
+    <section class="one">
+      <div class="label">Texto do Card:</div>
+      <ion-card class="card">
+        <textarea
+          [(ngModel)]="text"
+          (input)="textChange()"
+        ></textarea>
+      </ion-card>
+    </section>
+    
+    <section class="two">
+      <div class="label">Comentários:</div>
+      <ion-card *ngFor="let comment of comments">
+        <ion-card-content>
+          <div>
+            <div>{{comment.data.text}}</div>
+            <div>
+              <ion-button fill="clear" color="danger" (click)="deleteComment(comment.id)">
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+      <div class="button">
+        <ion-button (click)="newComment()">
+          Novo comentário
+          <ion-icon slot="end" name="add"></ion-icon>
+        </ion-button>
+      </div>
+    </section>
+
+  </div>
+</ion-content>
