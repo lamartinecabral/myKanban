@@ -48,6 +48,16 @@ ion-content{
   --background: var(--ion-color-light);
 }
 
+@font-face {
+  font-family: 'Segoe UI';
+  font-style: normal;
+  font-weight: normal;
+  src: url('./assets/fonts/segoeui.ttf');
+}
+html{
+  --ion-default-font: 'Segoe UI' !important;
+}
+
 /* Core CSS required for Ionic components to work properly */
 @import "~@ionic/angular/css/core.css";
 

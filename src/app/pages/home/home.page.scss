@@ -4,11 +4,11 @@
 }
 
 .boardimg{
-  background: var(--ion-color-primary);
+  background: rgba(var(--ion-color-primary-rgb),0.6);
   height: calc(var(--size) * 0.8);
   display: flex;
   div:nth-child(1){
-    background: white;
+    background: var(--ion-color-dark-contrast);
     position: relative;
     top: calc(var(--size) * 0.1);
     left: calc(var(--size) * 0.1);
@@ -16,7 +16,7 @@
     height: calc(var(--size) * 0.35);
   }
   div:nth-child(2){
-    background: white;
+    background: var(--ion-color-dark-contrast);
     position: relative;
     top: calc(var(--size) * 0.1);
     left: calc(var(--size) * 0.2);
