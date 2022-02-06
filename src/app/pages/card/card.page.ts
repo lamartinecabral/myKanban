@@ -40,7 +40,7 @@ export class CardPage implements OnInit {
   getCard(id: string){
     const {getFirestore,onSnapshot,doc} = firestore;
     const db = getFirestore();
-    this.unsubscribeCard = onSnapshot(doc(db, 'cards', id), (doc)=>{
+    this.unsubscribeCard = onSnapshot(doc(db, Card.col, id), (doc)=>{
       this.card = {id: doc.id, data: doc.data()}
       this.text = this.card.data.text;
     })
@@ -53,7 +53,7 @@ export class CardPage implements OnInit {
       this.updateDocum({
         id: this.card.id,
         data: {text: this.text || ' '}
-      }, 'cards');
+      }, Card.col);
     }, 500);
   }
 
@@ -89,7 +89,7 @@ export class CardPage implements OnInit {
       column_id: this.card.data.column_id,
       card_id: this.card.id,
       created: new Date().toISOString(),
-    }}, 'comments');
+    }}, Comment.col);
   }
 
   async alertInput(message){
@@ -116,7 +116,7 @@ export class CardPage implements OnInit {
   getComments(id){
     const {getFirestore,query,collection,where,onSnapshot} = firestore;
     const db = getFirestore();
-    const q = query(collection(db, "comments"), where("card_id", "==", id));
+    const q = query(collection(db, Comment.col), where("card_id", "==", id));
     this.unsubscribeComments = onSnapshot(q, (querySnapshot)=>{
       this.comments = querySnapshot.docs.map(doc=>{
         return {id: doc.id, data: doc.data()};
@@ -126,12 +126,12 @@ export class CardPage implements OnInit {
         if(a.data.created > b.data.created) return -1;
         return 0;
       });
-      console.log(this.comments);
+      // console.log(this.comments);
     })
   }
 
   deleteComment(id){
-    this.removeDoc(id, 'comments', "Tem certeza que deseja excluir esse Comentário?")
+    this.removeDoc(id, Comment.col, "Tem certeza que deseja excluir esse Comentário?")
   }
 
   async removeDoc(id: string, col: string, confirmMessage: string){

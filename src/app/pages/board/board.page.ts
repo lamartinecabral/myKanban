@@ -65,7 +65,7 @@ export class BoardPage implements OnInit {
         column_id: toColumn.id,
         index: this.cards[toColumn.id].length,
       }
-    }, 'cards')
+    }, Card.col)
   }
 
   moveColumn(col_index: number, increm: number){
@@ -75,7 +75,7 @@ export class BoardPage implements OnInit {
       data:{
         index: firestore.increment(increm * 1.5),
       }
-    }, 'columns')
+    }, Column.col)
   }
 
   // NEW METHODS
@@ -110,7 +110,7 @@ export class BoardPage implements OnInit {
   getBoard(id: string){
     const {getFirestore,onSnapshot,doc} = firestore;
     const db = getFirestore();
-    this.unsubscribeBoard = onSnapshot(doc(db, 'boards', id), (doc)=>{
+    this.unsubscribeBoard = onSnapshot(doc(db, Board.col, id), (doc)=>{
       this.board = {id: doc.id, data: doc.data()}
     })
   }
@@ -118,7 +118,7 @@ export class BoardPage implements OnInit {
   getColumns(id: string){
     const {getFirestore,query,collection,where,onSnapshot} = firestore;
     const db = getFirestore();
-    const q = query(collection(db, "columns"), where("board_id", "==", id));
+    const q = query(collection(db, Column.col), where("board_id", "==", id));
     this.unsubscribeColumns = onSnapshot(q, (querySnapshot)=>{
       this.columns = querySnapshot.docs.map(doc=>{
         return {id: doc.id, data: doc.data()};
@@ -131,14 +131,14 @@ export class BoardPage implements OnInit {
 
       if(querySnapshot.metadata.fromCache) return;
       if(this.columns.length === 0) this.initColumns();
-      this.checkIndexes(this.columns, 'columns');
+      this.checkIndexes(this.columns, Column.col);
     })
   }
 
   getCards(column: Column){
     const {getFirestore,query,collection,where,onSnapshot} = firestore;
     const db = getFirestore();
-    const q = query(collection(db, "cards"), where("column_id", "==", column.id));
+    const q = query(collection(db, Card.col), where("column_id", "==", column.id));
     this.unsubscribeCards[column.id] = onSnapshot(q, (querySnapshot)=>{
       this.cards[column.id] = querySnapshot.docs.map(doc=>{
         return {id: doc.id, data: doc.data()};
@@ -147,18 +147,18 @@ export class BoardPage implements OnInit {
       // console.log("Cards "+column.data.name, this.cards[column.id]);
 
       if(querySnapshot.metadata.fromCache) return;
-      this.checkIndexes(this.cards[column.id], 'cards');
+      this.checkIndexes(this.cards[column.id], Card.col);
     })
   }
 
   // CREATE METHODS
 
   async createColumn(column: Column){
-    this.createDoc((column as any), 'columns')
+    this.createDoc((column as any), Column.col)
   }
 
   async createCard(card: Card){
-    this.createDoc((card as any), 'cards')
+    this.createDoc((card as any), Card.col)
   }
 
   async createDoc(docum: {data: any}, col: string){
@@ -180,7 +180,7 @@ export class BoardPage implements OnInit {
     this.updateDocum({
       id: column.id,
       data: { name: name }
-    }, 'columns');
+    }, Column.col);
   }
 
   async editCard(card: Card){
@@ -189,31 +189,31 @@ export class BoardPage implements OnInit {
     this.updateDocum({
       id: card.id,
       data: { text: text }
-    }, 'cards');
+    }, Card.col);
   }
 
   async editBoard(){
-    const name = await this.alertInput("Escolha um novo nome para o Board");
+    const name = await this.alertInput("Escolha um novo nome para o Projeto");
     if(name === "") return;
     this.updateDocum({
       id: this.board.id,
       data: { name: name }
-    }, 'boards');
+    }, Board.col);
   }
 
   // DELETE METHODS
 
   async deleteBoard(){
-    await this.removeDoc(this.board.id, 'boards', "Tem certeza que deseja excluir esse Board?")
+    await this.removeDoc(this.board.id, Board.col, "Tem certeza que deseja excluir esse Projeto?")
     this.router.navigateByUrl('boards');
   }
 
   deleteColumn(id){
-    this.removeDoc(id, 'columns', "Tem certeza que deseja excluir esse Status?")
+    this.removeDoc(id, Column.col, "Tem certeza que deseja excluir esse Status?")
   }
 
   deleteCard(id){
-    this.removeDoc(id, 'cards', "Tem certeza que deseja excluir essa Atividade?")
+    this.removeDoc(id, Card.col, "Tem certeza que deseja excluir essa Atividade?")
   }
 
   async removeDoc(id: string, col: string, confirmMessage: string){
@@ -296,7 +296,7 @@ export class BoardPage implements OnInit {
         index: index,
       }}
     }).forEach((column: Column)=>{
-      batch.set(doc(collection(db, "columns")), column.data);
+      batch.set(doc(collection(db, Column.col)), column.data);
     })
     await batch.commit();
   }

@@ -65,7 +65,7 @@ export class HomePage {
     const {getFirestore,addDoc,collection} = firestore;
     const db = getFirestore();
     try {
-      const docRef = await addDoc(collection(db, "boards"), board.data);
+      const docRef = await addDoc(collection(db, Board.col), board.data);
       console.log("Document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
@@ -76,7 +76,7 @@ export class HomePage {
     const {getFirestore,updateDoc,doc} = firestore;
     const db = getFirestore();
     try {
-      await updateDoc(doc(db, "boards", board.id), board.data);
+      await updateDoc(doc(db, Board.col, board.id), board.data);
       console.log("Document written with ID: ", board.id);
     } catch (e) {
       console.error("Error adding document: ", e);
@@ -86,7 +86,7 @@ export class HomePage {
   getBoards(){
     const {getFirestore,query,collection,where,onSnapshot} = firestore;
     const db = getFirestore();
-    const q = query(collection(db, "boards"), where("uid", "==", this.auth.user.uid));
+    const q = query(collection(db, Board.col), where("uid", "==", this.auth.user.uid));
     this.unsubscribe = onSnapshot(q, (querySnapshot)=>{
       this.boards = querySnapshot.docs.map(doc=>{
         return {id: doc.id, data: doc.data()};
@@ -112,7 +112,7 @@ export class HomePage {
       if(this.boards[i].data.index !== this.boards.length-i-1){
         if(!batch) batch = writeBatch(db);
         batch.update(
-          doc(db, "boards", this.boards[i].id),
+          doc(db, Board.col, this.boards[i].id),
           {index: this.boards.length-i-1}
         );
       }

@@ -6,8 +6,9 @@
 // column 1 - N card
 // card 1 - N comment
 
-export interface Board {
-  id?: string,
+export class Board {
+  static col = 'boards';
+  id?: string;
   data?: {
     name?: string,
     uid?: string,
@@ -17,8 +18,9 @@ export interface Board {
   }
 }
 
-export interface Column {
-  id?: string,
+export class Column {
+  static col = 'columns';
+  id?: string;
   data?: {
     name?: string,
     uid?: string,
@@ -28,8 +30,9 @@ export interface Column {
   }
 }
 
-export interface Card {
-  id?: string,
+export class Card {
+  static col = 'cards';
+  id?: string;
   data?: {
     text?: string,
     uid?: string,
@@ -40,8 +43,9 @@ export interface Card {
   }
 }
 
-export interface Comment {
-  id?: string,
+export class Comment {
+  static col = 'comments';
+  id?: string;
   data?: {
     text?: string,
     uid?: string,
