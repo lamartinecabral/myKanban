@@ -12,6 +12,9 @@
 .flex{
   display: flex;
 }
+.column{
+  flex-direction: column;
+}
 .hcenter{
   justify-content: center;
 }
@@ -33,6 +36,12 @@
 }
 .hfit-content{
   width: fit-content;
+}
+.half-margin{
+  margin: 0.5em;
+}
+.half-padding{
+  padding: 0.5em;
 }
 [hoverlight]{
   :hover{

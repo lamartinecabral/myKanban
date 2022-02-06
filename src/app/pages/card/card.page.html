@@ -13,11 +13,11 @@
 </ion-header>
 
 <ion-content>
-  <div class="flex wrap content"><div class="flex wrap">
+  <div class="flex wrap content"><div class="flex wrap half-padding">
 
-    <section class="one">
+    <section class="one flex column">
       <div class="label">Descrição da Atividade:</div>
-      <ion-card class="card">
+      <ion-card class="card half-margin">
         <textarea
           [(ngModel)]="text"
           (input)="textChange()"
@@ -26,9 +26,9 @@
       </ion-card>
     </section>
     
-    <section class="two">
+    <section class="two flex column">
       <div class="label">Comentários:</div>
-      <ion-card *ngFor="let comment of comments">
+      <ion-card *ngFor="let comment of comments" class="half-margin">
         <ion-card-content>
           <div>
             <div>{{comment.data.text}}</div>

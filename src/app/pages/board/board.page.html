@@ -20,10 +20,10 @@
 
 <ion-content>
   <div class="content">
-    <div class="flex ion-padding hfit-content">
+    <div class="flex half-padding hfit-content">
 
       <!-- INICIO DA COLUNA -->
-      <div class="column" *ngFor="let column of columns; let i = index">
+      <div class="flex column" *ngFor="let column of columns; let i = index">
 
         <div class="head">
           <div class="edit-buttons">
@@ -50,7 +50,7 @@
         </div>
 
         <!-- INICIO DO CARD -->
-        <ion-card *ngFor="let card of cards[column.id]; let j = index">
+        <ion-card *ngFor="let card of cards[column.id]; let j = index" class="half-margin">
           <ion-card-content tappable (click)="openCard(card)">
             {{(card.data.title || card.data.text) | limit:40}}
           </ion-card-content>
