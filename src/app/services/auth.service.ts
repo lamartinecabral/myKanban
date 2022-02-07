@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
-import { signOut, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import * as firebaseAuth from "firebase/auth";
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,7 @@ export class AuthService {
   user$: ReplaySubject<any> = new ReplaySubject(1);
 
   constructor() {
+    const { getAuth, onAuthStateChanged } = firebaseAuth;
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -33,6 +34,7 @@ export class AuthService {
   }
 
   signIn(email,password){
+    const { getAuth, signInWithEmailAndPassword } = firebaseAuth;
     const auth = getAuth();
     return signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -55,6 +57,7 @@ export class AuthService {
   }
 
   createUser(email,password){
+    const { getAuth, createUserWithEmailAndPassword } = firebaseAuth;
     const auth = getAuth();
     return createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -79,8 +82,27 @@ export class AuthService {
   }
 
   logout(){
+    const { getAuth, signOut } = firebaseAuth;
     const auth = getAuth();
     return signOut(auth);
+  }
+
+  resetPassword(email){
+    const { getAuth, sendPasswordResetEmail } = firebaseAuth;
+    const auth = getAuth();
+    return sendPasswordResetEmail(auth, email)
+      .then((userCredential) => {
+        return {
+          error: null
+        };
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        return {
+          error: error
+        };
+      });
   }
   
 }

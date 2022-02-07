@@ -100,4 +100,16 @@ export class LoginPage implements OnInit {
     await toast.present();
   }
 
+  async resetPassword(){
+    const email = this.loginForm.value.email;
+    this.auth.resetPassword(email).then(res=>{
+      if(res.error){
+        console.error(res.error.message);
+        this.toast(res.error.message);
+      } else {
+        this.toast("Um link de reset foi enviado para o seu e-mail");
+      }
+    })
+  }
+
 }
