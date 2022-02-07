@@ -4,6 +4,8 @@ import { AlertController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import * as firestore from "firebase/firestore";
 import { Board } from 'src/app/utils/interfaces';
+import { IoService } from 'src/app/services/io.service';
+import { FirestoreService } from 'src/app/services/firestore.service';
 
 @Component({
   selector: 'app-home',
@@ -20,6 +22,8 @@ export class HomePage {
     public router: Router,
     public auth: AuthService,
     public alertCtrl: AlertController,
+    public io: IoService,
+    public firestore: FirestoreService,
   ) {}
 
   ngOnDestroy(){
@@ -36,25 +40,10 @@ export class HomePage {
   }
 
   async newBoard(){
-    const alert = await this.alertCtrl.create({
-      subHeader: "Escolha um nome para o Board",
-      inputs: [{
-        name: 'name',
-        type: 'text',
-      }],
-      buttons: [{
-        text: "Cancelar",
-        role: "Cancel",
-      },{
-        text: "OK",
-        role: "Ok",
-      }]
-    });
-    await alert.present();
-    const res = await alert.onDidDismiss();
-    if(res.role !== "Ok") return;
+    const name = await this.io.alertInput("Escolha um nome para o Projeto");
+    if(name === "") return;
     this.createBoard({data: {
-      name: res.data.values.name,
+      name: name,
       uid: this.auth.user.uid,
       created: new Date().toISOString(),
       index: this.boards.length,
@@ -62,25 +51,7 @@ export class HomePage {
   }
 
   async createBoard(board: Board){
-    const {getFirestore,addDoc,collection} = firestore;
-    const db = getFirestore();
-    try {
-      const docRef = await addDoc(collection(db, Board.col), board.data);
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  }
-
-  async updateBoard(board: Board){
-    const {getFirestore,updateDoc,doc} = firestore;
-    const db = getFirestore();
-    try {
-      await updateDoc(doc(db, Board.col, board.id), board.data);
-      console.log("Document written with ID: ", board.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
+    this.firestore.createDoc((board as any), Board.col)
   }
 
   getBoards(){

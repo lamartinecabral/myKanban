@@ -3,12 +3,12 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="boards"></ion-back-button>
     </ion-buttons>
-    <button (click)="editBoard()" hoverlight class="title">
-      <ion-title hoverlight>
-        {{board?.data?.name | titlecase}}
+    <ion-title>
+      {{board?.data?.name | titlecase}}
+      <button (click)="editBoard()" title="Alterar título" class="title" hoverlight>
         <ion-icon name="create"></ion-icon>
-      </ion-title>
-    </button>
+      </button>
+    </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="deleteBoard()" fill="solid" color="danger">
         Excluir Projeto
@@ -33,10 +33,12 @@
               </ion-button>
             </span>
 
-            <button class="title" (click)="editColumn(column)" hoverlight>
+            <span>
               <b>{{column.data.name | uppercase}} </b>
-              <ion-icon name="create"></ion-icon>
-            </button>
+              <button class="title" (click)="editColumn(column)" hoverlight title="Alterar Status">
+                <ion-icon name="create"></ion-icon>
+              </button>
+            </span>
 
             <span>
               <ion-button fill="clear" color="light" (click)="moveColumn(i,-1)" [disabled]="i === 0" size="small">

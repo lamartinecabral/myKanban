@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import * as firestore from 'firebase/firestore'
 import { AuthService } from 'src/app/services/auth.service';
+import { FirestoreService } from 'src/app/services/firestore.service';
+import { IoService } from 'src/app/services/io.service';
 import { Card, Comment } from 'src/app/utils/interfaces';
 
 @Component({
@@ -23,12 +25,14 @@ export class CardPage implements OnInit {
 
   constructor(
     public route: ActivatedRoute,
-    public alertCtrl: AlertController,
     public auth: AuthService,
+    public io: IoService,
+    public firestore: FirestoreService,
   ) { }
 
   ngOnDestroy(){
     if(this.unsubscribeCard) this.unsubscribeCard();
+    if(this.unsubscribeComments) this.unsubscribeComments();
   }
 
   ngOnInit() {
@@ -47,9 +51,9 @@ export class CardPage implements OnInit {
   }
 
   async editCardTitle(){
-    const title = await this.alertInput("Digite o novo título da Atividade");
+    const title = await this.io.alertInput("Digite o novo título da Atividade");
     if(title === "") return;
-    this.updateDocum({
+    this.firestore.editDoc({
       id: this.card.id,
       data: { title: title }
     }, Card.col);
@@ -59,39 +63,17 @@ export class CardPage implements OnInit {
   textChange(){
     if(this.timeoutId) clearTimeout(this.timeoutId);
     this.timeoutId = setTimeout(() => {
-      this.updateDocum({
+      this.firestore.editDoc({
         id: this.card.id,
         data: {text: this.text || ' '}
       }, Card.col);
     }, 500);
   }
 
-  async updateDocum(d: {id: string, data: any}, col: string){
-    const {getFirestore,updateDoc,doc} = firestore;
-    const db = getFirestore();
-    try {
-      await updateDoc(doc(db, col, d.id), d.data);
-      console.log("Document updated:", d);
-    } catch (e) {
-      console.error("Error updating document:", e);
-    }
-  }
-
-  async createDoc(docum: {data: any}, col: string){
-    const {getFirestore,addDoc,collection} = firestore;
-    const db = getFirestore();
-    try {
-      const docRef = await addDoc(collection(db, col), docum.data);
-      console.log("Document created with ID: ", docRef.id, docum.data);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  }
-
   async newComment(){
-    const text = await this.alertInput("Digite o texto do Comentário");
+    const text = await this.io.alertInput("Digite o texto do Comentário");
     if(text === "") return;
-    this.createDoc({data: {
+    this.firestore.createDoc({data: {
       text: text,
       uid: this.auth.user.uid,
       board_id: this.card.data.board_id,
@@ -99,27 +81,6 @@ export class CardPage implements OnInit {
       card_id: this.card.id,
       created: new Date().toISOString(),
     }}, Comment.col);
-  }
-
-  async alertInput(message){
-    const alert = await this.alertCtrl.create({
-      subHeader: message,
-      inputs: [{
-        name: 'name',
-        type: 'text',
-      }],
-      buttons: [{
-        text: "Cancelar",
-        role: "Cancel",
-      },{
-        text: "OK",
-        role: "Ok",
-      }]
-    });
-    await alert.present();
-    const res = await alert.onDidDismiss();
-    if(res.role !== "Ok") return "";
-    return res.data.values.name;
   }
 
   getComments(id){
@@ -140,37 +101,7 @@ export class CardPage implements OnInit {
   }
 
   deleteComment(id){
-    this.removeDoc(id, Comment.col, "Tem certeza que deseja excluir esse Comentário?")
-  }
-
-  async removeDoc(id: string, col: string, confirmMessage: string){
-    const answer = await this.alertConfirm(confirmMessage);
-    if(!answer) return;
-    
-    const {getFirestore,deleteDoc,doc} = firestore;
-    const db = getFirestore();
-    try {
-      await deleteDoc(doc(db, col, id));
-      console.log("Document deleted with ID:", `${col}/${id}`);
-    } catch (e) {
-      console.error("Error deleting document: ", e);
-    }
-  }
-
-  async alertConfirm(message){
-    const alert = await this.alertCtrl.create({
-      header: message,
-      buttons: [
-        "Não",
-        {
-          text: 'Sim',
-          role: 'Ok',
-        }
-      ]
-    })
-    await alert.present();
-    const res = await alert.onDidDismiss();
-    return res.role === 'Ok';
+    this.firestore.removeDoc(id, Comment.col, "Tem certeza que deseja excluir esse Comentário?")
   }
 
 }

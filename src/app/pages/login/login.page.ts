@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
+import { IoService } from 'src/app/services/io.service';
 
 @Component({
   selector: 'app-login',
@@ -17,8 +17,8 @@ export class LoginPage implements OnInit {
 
   constructor(
     public auth: AuthService,
-    public toastCtrl: ToastController,
     public router: Router,
+    public io: IoService,
   ) {
     this.setupForms();
   }
@@ -38,7 +38,7 @@ export class LoginPage implements OnInit {
     ).then(res=>{
       if(res.error){
         console.error(res.error.message);
-        this.toast(res.error.message);
+        this.io.toast(res.error.message);
       } else {
         this.router.navigateByUrl('',{replaceUrl: true});
       }
@@ -47,7 +47,7 @@ export class LoginPage implements OnInit {
 
   async create(){
     if(this.createForm.value.password !== this.createForm.value.confirm){
-      return this.toast("As senhas não conferem");
+      return this.io.toast("As senhas não conferem");
     }
 
     this.auth.createUser(
@@ -56,7 +56,7 @@ export class LoginPage implements OnInit {
     ).then(res=>{
       if(res.error){
         console.error(res.error.message);
-        this.toast(res.error.message);
+        this.io.toast(res.error.message);
       } else {
         this.router.navigateByUrl('',{replaceUrl: true});
       }
@@ -92,22 +92,14 @@ export class LoginPage implements OnInit {
       { invalid: true };
   }
 
-  async toast(message){
-    const toast = await this.toastCtrl.create({
-      message: message,
-      duration: 2500,
-    });
-    await toast.present();
-  }
-
   async resetPassword(){
     const email = this.loginForm.value.email;
     this.auth.resetPassword(email).then(res=>{
       if(res.error){
         console.error(res.error.message);
-        this.toast(res.error.message);
+        this.io.toast(res.error.message);
       } else {
-        this.toast("Um link de reset foi enviado para o seu e-mail");
+        this.io.toast("Um link de reset foi enviado para o seu e-mail");
       }
     })
   }

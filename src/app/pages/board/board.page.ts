@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
 import * as firestore from 'firebase/firestore';
 import { AuthService } from 'src/app/services/auth.service';
+import { FirestoreService } from 'src/app/services/firestore.service';
+import { IoService } from 'src/app/services/io.service';
 import { Board, Column, Card } from 'src/app/utils/interfaces';
 
 @Component({
@@ -24,8 +25,9 @@ export class BoardPage implements OnInit {
   constructor(
     public route: ActivatedRoute,
     public router: Router,
-    public alertCtrl: AlertController,
     public auth: AuthService,
+    public firestore: FirestoreService,
+    public io: IoService,
   ) { }
 
   ngOnDestroy(){
@@ -41,17 +43,6 @@ export class BoardPage implements OnInit {
     this.getColumns(this.route.snapshot.params.id);
   }
 
-  async updateDocum(d: {id: string, data: any}, col: string){
-    const {getFirestore,updateDoc,doc} = firestore;
-    const db = getFirestore();
-    try {
-      await updateDoc(doc(db, col, d.id), d.data);
-      console.log("Document updated:", d);
-    } catch (e) {
-      console.error("Error updating document:", e);
-    }
-  }
-
   // MOVE METHODS
 
   moveCard(col_index: number, card_index: number, increment: number){
@@ -59,7 +50,7 @@ export class BoardPage implements OnInit {
     let card = this.cards[fromColumn.id][card_index];
     let toColumn = this.columns[col_index + increment];
     card.data.column_id = toColumn.id
-    this.updateDocum({
+    this.firestore.editDoc({
       id: card.id,
       data:{
         column_id: toColumn.id,
@@ -70,7 +61,7 @@ export class BoardPage implements OnInit {
 
   moveColumn(col_index: number, increm: number){
     let column = this.columns[col_index];
-    this.updateDocum({
+    this.firestore.editDoc({
       id: column.id,
       data:{
         index: firestore.increment(increm * 1.5),
@@ -81,7 +72,7 @@ export class BoardPage implements OnInit {
   // NEW METHODS
 
   async newColumn(){
-    const name = await this.alertInput("Escolha um nome para o Status");
+    const name = await this.io.alertInput("Escolha um nome para o Status");
     if(name === "") return;
     this.createColumn({data: {
       name: name,
@@ -93,7 +84,7 @@ export class BoardPage implements OnInit {
   }
 
   async newCard(column: Column){
-    const title = await this.alertInput("Digite o título da Atividade");
+    const title = await this.io.alertInput("Digite o título da Atividade");
     if(title === "") return;
     this.createCard({data: {
       title: title,
@@ -154,48 +145,37 @@ export class BoardPage implements OnInit {
   // CREATE METHODS
 
   async createColumn(column: Column){
-    this.createDoc((column as any), Column.col)
+    this.firestore.createDoc((column as any), Column.col)
   }
 
   async createCard(card: Card){
-    this.createDoc((card as any), Card.col)
-  }
-
-  async createDoc(docum: {data: any}, col: string){
-    const {getFirestore,addDoc,collection} = firestore;
-    const db = getFirestore();
-    try {
-      const docRef = await addDoc(collection(db, col), docum.data);
-      console.log("Document created with ID: ", docRef.id, docum.data);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
+    this.firestore.createDoc((card as any), Card.col)
   }
 
   // EDIT METHODS
 
   async editColumn(column: Column){
-    const name = await this.alertInput("Escolha um novo nome para o Status");
+    const name = await this.io.alertInput("Escolha um novo nome para o Status");
     if(name === "") return;
-    this.updateDocum({
+    this.firestore.editDoc({
       id: column.id,
       data: { name: name }
     }, Column.col);
   }
 
   async editCard(card: Card){
-    const text = await this.alertInput("Digite a nova descrição da Atividade");
+    const text = await this.io.alertInput("Digite a nova descrição da Atividade");
     if(text === "") return;
-    this.updateDocum({
+    this.firestore.editDoc({
       id: card.id,
       data: { text: text }
     }, Card.col);
   }
 
   async editBoard(){
-    const name = await this.alertInput("Escolha um novo nome para o Projeto");
+    const name = await this.io.alertInput("Escolha um novo nome para o Projeto");
     if(name === "") return;
-    this.updateDocum({
+    this.firestore.editDoc({
       id: this.board.id,
       data: { name: name }
     }, Board.col);
@@ -204,69 +184,16 @@ export class BoardPage implements OnInit {
   // DELETE METHODS
 
   async deleteBoard(){
-    await this.removeDoc(this.board.id, Board.col, "Tem certeza que deseja excluir esse Projeto?")
-    this.router.navigateByUrl('boards');
+    if(await this.firestore.removeDoc(this.board.id, Board.col, "Tem certeza que deseja excluir esse Projeto?"))
+      this.router.navigateByUrl('boards');
   }
 
   deleteColumn(id){
-    this.removeDoc(id, Column.col, "Tem certeza que deseja excluir esse Status?")
+    this.firestore.removeDoc(id, Column.col, "Tem certeza que deseja excluir esse Status?")
   }
 
   deleteCard(id){
-    this.removeDoc(id, Card.col, "Tem certeza que deseja excluir essa Atividade?")
-  }
-
-  async removeDoc(id: string, col: string, confirmMessage: string){
-    const answer = await this.alertConfirm(confirmMessage);
-    if(!answer) return;
-    
-    const {getFirestore,deleteDoc,doc} = firestore;
-    const db = getFirestore();
-    try {
-      await deleteDoc(doc(db, col, id));
-      console.log("Document deleted with ID:", `${col}/${id}`);
-    } catch (e) {
-      console.error("Error deleting document: ", e);
-    }
-  }
-
-  // ALERT METHODS
-
-  async alertConfirm(message){
-    const alert = await this.alertCtrl.create({
-      header: message,
-      buttons: [
-        "Não",
-        {
-          text: 'Sim',
-          role: 'Ok',
-        }
-      ]
-    })
-    await alert.present();
-    const res = await alert.onDidDismiss();
-    return res.role === 'Ok';
-  }
-
-  async alertInput(message){
-    const alert = await this.alertCtrl.create({
-      subHeader: message,
-      inputs: [{
-        name: 'name',
-        type: 'text',
-      }],
-      buttons: [{
-        text: "Cancelar",
-        role: "Cancel",
-      },{
-        text: "OK",
-        role: "Ok",
-      }]
-    });
-    await alert.present();
-    const res = await alert.onDidDismiss();
-    if(res.role !== "Ok") return "";
-    return res.data.values.name;
+    this.firestore.removeDoc(id, Card.col, "Tem certeza que deseja excluir essa Atividade?")
   }
 
   // OTHER METHODS

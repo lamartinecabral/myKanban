@@ -3,6 +3,12 @@ button.title{
   font-size: inherit;
   text-align: inherit;
   color: inherit;
+  ion-icon{
+    pointer-events: none;
+  }
+}
+button.title:hover{
+  background: rgba(var(--ion-color-light-rgb),0.25);
 }
 .content{
   height: 100%;
