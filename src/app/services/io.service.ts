@@ -27,12 +27,13 @@ export class IoService {
     return res.role === 'Ok';
   }
 
-  async alertInput(message){
+  async alertInput(message, value?){
     const alert = await this.alertCtrl.create({
       subHeader: message,
       inputs: [{
         name: 'name',
-        type: 'text',
+        value: value,
+        cssClass: "alert-input",
       }],
       buttons: [{
         text: "Cancelar",
@@ -43,6 +44,10 @@ export class IoService {
       }]
     });
     await alert.present();
+    document.querySelector('ion-alert .alert-input').addEventListener('keydown',(e: KeyboardEvent)=>{
+      if((e.key == 'Enter' || e.code == 'Enter' || e.keyCode == 13) && !e.ctrlKey && !e.shiftKey)
+        (document.querySelector('ion-alert .alert-button-role-Ok') as any).click();
+    })
     const res = await alert.onDidDismiss();
     if(res.role !== "Ok") return "";
     return res.data.values.name;

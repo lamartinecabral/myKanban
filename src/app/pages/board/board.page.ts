@@ -157,7 +157,7 @@ export class BoardPage implements OnInit {
   // EDIT METHODS
 
   async editColumn(column: Column){
-    const name = await this.io.alertInput("Escolha um novo nome para o Status");
+    const name = await this.io.alertInput("Escolha um novo nome para o Status", column.data.name);
     if(name === "") return;
     this.firestore.editDoc({
       id: column.id,
@@ -166,7 +166,7 @@ export class BoardPage implements OnInit {
   }
 
   async editCard(card: Card){
-    const title = await this.io.alertInput("Digite o novo título da Atividade");
+    const title = await this.io.alertInput("Digite o novo título da Atividade", card.data.title);
     if(title === "") return;
     this.firestore.editDoc({
       id: card.id,
@@ -175,7 +175,7 @@ export class BoardPage implements OnInit {
   }
 
   async editBoard(){
-    const name = await this.io.alertInput("Escolha um novo nome para o Projeto");
+    const name = await this.io.alertInput("Escolha um novo nome para o Projeto", this.board.data.name);
     if(name === "") return;
     this.firestore.editDoc({
       id: this.board.id,
