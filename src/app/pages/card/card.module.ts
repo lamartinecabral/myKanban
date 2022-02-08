@@ -8,6 +8,7 @@ import { CardPageRoutingModule } from './card-routing.module';
 
 import { CardPage } from './card.page';
 import { FnPipe } from 'src/app/pipes/fn.pipe';
+import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,6 @@ import { FnPipe } from 'src/app/pipes/fn.pipe';
     IonicModule,
     CardPageRoutingModule
   ],
-  declarations: [CardPage,FnPipe]
+  declarations: [CardPage, FnPipe, BackButtonComponent]
 })
 export class CardPageModule {}

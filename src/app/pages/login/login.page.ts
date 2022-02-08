@@ -23,6 +23,10 @@ export class LoginPage implements OnInit {
     this.setupForms();
   }
 
+  ngOnDestroy(){
+    console.log("ngOnDestroy()");
+  }
+
   ngOnInit() {
   }
 

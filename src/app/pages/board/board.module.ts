@@ -8,6 +8,7 @@ import { BoardPageRoutingModule } from './board-routing.module';
 
 import { BoardPage } from './board.page';
 import { LimitPipe } from 'src/app/pipes/limit.pipe';
+import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,6 @@ import { LimitPipe } from 'src/app/pipes/limit.pipe';
     IonicModule,
     BoardPageRoutingModule
   ],
-  declarations: [BoardPage, LimitPipe]
+  declarations: [BoardPage, LimitPipe, BackButtonComponent]
 })
 export class BoardPageModule {}

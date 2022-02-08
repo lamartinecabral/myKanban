@@ -31,6 +31,7 @@ export class CardPage implements OnInit {
   ) { }
 
   ngOnDestroy(){
+    console.log("ngOnDestroy()");
     if(this.unsubscribeCard) this.unsubscribeCard();
     if(this.unsubscribeComments) this.unsubscribeComments();
   }

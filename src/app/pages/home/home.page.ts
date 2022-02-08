@@ -27,6 +27,7 @@ export class HomePage {
   ) {}
 
   ngOnDestroy(){
+    console.log("ngOnDestroy()");
     if(this.unsubscribe) this.unsubscribe();
   }
 

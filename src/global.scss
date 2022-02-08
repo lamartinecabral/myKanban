@@ -64,7 +64,7 @@ ion-content{
   src: url('./assets/fonts/segoeui.ttf');
 }
 html{
-  --ion-default-font: 'Segoe UI' !important;
+  --ion-default-font: 'Segoe UI', system-ui, sans-serif !important;
 }
 
 /* Core CSS required for Ionic components to work properly */

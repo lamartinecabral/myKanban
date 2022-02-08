@@ -1,10 +1,12 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button [defaultHref]="'boards/'+board_id"></ion-back-button>
+      <app-back-button [defaultHref]="'boards/'+board_id"></app-back-button>
     </ion-buttons>    
     <ion-title>
-      {{card?.data?.title || 'Sem título'}}
+      <span (click)="editCardTitle()">
+        {{card?.data?.title || 'Sem título'}}
+      </span>
       <button (click)="editCardTitle()" title="Alterar título" hoverlight class="title">
         <ion-icon name="create"></ion-icon>
       </button>

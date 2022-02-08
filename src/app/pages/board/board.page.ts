@@ -31,6 +31,7 @@ export class BoardPage implements OnInit {
   ) { }
 
   ngOnDestroy(){
+    console.log("ngOnDestroy()");
     if(this.unsubscribeBoard) this.unsubscribeBoard();
     if(this.unsubscribeColumns) this.unsubscribeColumns();
     for(let id in this.unsubscribeCards)
@@ -164,11 +165,11 @@ export class BoardPage implements OnInit {
   }
 
   async editCard(card: Card){
-    const text = await this.io.alertInput("Digite a nova descrição da Atividade");
-    if(text === "") return;
+    const title = await this.io.alertInput("Digite o novo título da Atividade");
+    if(title === "") return;
     this.firestore.editDoc({
       id: card.id,
-      data: { text: text }
+      data: { title: title }
     }, Card.col);
   }
 
@@ -231,6 +232,10 @@ export class BoardPage implements OnInit {
   openCard(card: Card){
     const board_id = this.route.snapshot.params.id;
     this.router.navigateByUrl(`boards/${board_id}/${card.id}`);
+  }
+
+  back(){
+    this.router.navigateByUrl(`boards`, {replaceUrl: true});
   }
 
 }
