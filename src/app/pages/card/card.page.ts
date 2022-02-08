@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AlertController } from '@ionic/angular';
-import * as firestore from 'firebase/firestore'
+import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirestoreService } from 'src/app/services/firestore.service';
 import { IoService } from 'src/app/services/io.service';
@@ -16,24 +15,24 @@ export class CardPage implements OnInit {
 
   board_id;
   card: Card;
-  text = '';
+  text: string = '';
 
   comments: Comment[]
 
-  unsubscribeCard
-  unsubscribeComments
+  subscriptionCard: Subscription
+  subscriptionComments: Subscription
 
   constructor(
     public route: ActivatedRoute,
     public auth: AuthService,
     public io: IoService,
-    public firestore: FirestoreService,
+    public fire: FirestoreService,
   ) { }
 
   ngOnDestroy(){
     console.log("ngOnDestroy()");
-    if(this.unsubscribeCard) this.unsubscribeCard();
-    if(this.unsubscribeComments) this.unsubscribeComments();
+    if(this.subscriptionCard) this.subscriptionCard.unsubscribe();
+    if(this.subscriptionComments) this.subscriptionComments.unsubscribe();
   }
 
   ngOnInit() {
@@ -43,18 +42,16 @@ export class CardPage implements OnInit {
   }
 
   getCard(id: string){
-    const {getFirestore,onSnapshot,doc} = firestore;
-    const db = getFirestore();
-    this.unsubscribeCard = onSnapshot(doc(db, Card.col, id), (doc)=>{
-      this.card = {id: doc.id, data: doc.data()}
-      this.text = this.card.data.text;
-    })
+    this.subscriptionCard = this.fire.onGet(Card.col, id)
+      .subscribe(snap=>{
+        this.card = snap.doc;
+      })
   }
 
   async editCardTitle(){
     const title = await this.io.alertInput("Digite o novo título da Atividade");
     if(title === "") return;
-    this.firestore.editDoc({
+    this.fire.editDoc({
       id: this.card.id,
       data: { title: title }
     }, Card.col);
@@ -64,9 +61,9 @@ export class CardPage implements OnInit {
   textChange(){
     if(this.timeoutId) clearTimeout(this.timeoutId);
     this.timeoutId = setTimeout(() => {
-      this.firestore.editDoc({
+      this.fire.editDoc({
         id: this.card.id,
-        data: {text: this.text || ' '}
+        data: {text: this.text}
       }, Card.col);
     }, 500);
   }
@@ -74,7 +71,7 @@ export class CardPage implements OnInit {
   async newComment(){
     const text = await this.io.alertInput("Digite o texto do Comentário");
     if(text === "") return;
-    this.firestore.createDoc({data: {
+    this.fire.createDoc({data: {
       text: text,
       uid: this.auth.user.uid,
       board_id: this.card.data.board_id,
@@ -85,13 +82,10 @@ export class CardPage implements OnInit {
   }
 
   getComments(id){
-    const {getFirestore,query,collection,where,onSnapshot} = firestore;
-    const db = getFirestore();
-    const q = query(collection(db, Comment.col), where("card_id", "==", id));
-    this.unsubscribeComments = onSnapshot(q, (querySnapshot)=>{
-      this.comments = querySnapshot.docs.map(doc=>{
-        return {id: doc.id, data: doc.data()};
-      })
+    this.subscriptionComments = this.fire.onList(Comment.col, [{
+      field:"card_id", op:"==", value:id
+    }]).subscribe(snap=>{
+      this.comments = snap.docs;
       this.comments.sort((a,b)=>{
         if(a.data.created < b.data.created) return +1;
         if(a.data.created > b.data.created) return -1;
@@ -102,7 +96,7 @@ export class CardPage implements OnInit {
   }
 
   deleteComment(id){
-    this.firestore.removeDoc(id, Comment.col, "Tem certeza que deseja excluir esse Comentário?")
+    this.fire.removeDoc(id, Comment.col, "Tem certeza que deseja excluir esse Comentário?")
   }
 
 }

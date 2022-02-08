@@ -19,7 +19,7 @@
     <ion-card *ngFor="let board of boards" class="board" tappable (click)="open(board.id)">
       <div class="boardimg"><div></div><div></div></div>
       <ion-card-header>
-        <ion-card-subtitle>
+        <ion-card-subtitle class="ellipsis">
           {{board.data.name}}
         </ion-card-subtitle>
       </ion-card-header>

@@ -56,7 +56,7 @@
         <!-- INICIO DO CARD -->
         <ion-card *ngFor="let card of cards[column.id]; let j = index" class="half-margin">
           <ion-card-content tappable (click)="openCard(card)">
-            {{(card.data.title || card.data.text) | limit:40}}
+            {{(card.data.title || card.data.text) | limit:140}}
           </ion-card-content>
 
           <!-- botoes de alterar card -->

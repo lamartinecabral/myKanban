@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import * as firestore from 'firebase/firestore';
+import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirestoreService } from 'src/app/services/firestore.service';
 import { IoService } from 'src/app/services/io.service';
@@ -15,29 +16,29 @@ import { Board, Column, Card } from 'src/app/utils/interfaces';
 export class BoardPage implements OnInit {
 
   board: Board;
-  unsubscribeBoard;
+  subscriptionBoard: Subscription;
 
   columns: any[];
-  unsubscribeColumns;
+  subscriptionColumns: Subscription;
 
   cards: {[column_id: string]: Card[]} = {};
-  unsubscribeCards = {};
+  subscriptionCards: {[column_id: string]: Subscription} = {};
 
   constructor(
     public route: ActivatedRoute,
     public nav: NavService,
     public auth: AuthService,
-    public firestore: FirestoreService,
+    public fire: FirestoreService,
     public io: IoService,
   ) { }
 
   ngOnDestroy(){
     console.log("ngOnDestroy()");
-    if(this.unsubscribeBoard) this.unsubscribeBoard();
-    if(this.unsubscribeColumns) this.unsubscribeColumns();
-    for(let id in this.unsubscribeCards)
-      if(this.unsubscribeCards[id])
-        this.unsubscribeCards[id]();
+    if(this.subscriptionBoard) this.subscriptionBoard.unsubscribe();
+    if(this.subscriptionColumns) this.subscriptionColumns.unsubscribe();
+    for(let id in this.subscriptionCards)
+      if(this.subscriptionCards[id])
+        this.subscriptionCards[id].unsubscribe();
   }
 
   ngOnInit() {
@@ -52,7 +53,7 @@ export class BoardPage implements OnInit {
     let card = this.cards[fromColumn.id][card_index];
     let toColumn = this.columns[col_index + increment];
     card.data.column_id = toColumn.id
-    this.firestore.editDoc({
+    this.fire.editDoc({
       id: card.id,
       data:{
         column_id: toColumn.id,
@@ -63,7 +64,7 @@ export class BoardPage implements OnInit {
 
   moveColumn(col_index: number, increm: number){
     let column = this.columns[col_index];
-    this.firestore.editDoc({
+    this.fire.editDoc({
       id: column.id,
       data:{
         index: firestore.increment(increm * 1.5),
@@ -101,57 +102,50 @@ export class BoardPage implements OnInit {
   // GET METHODS
 
   getBoard(id: string){
-    const {getFirestore,onSnapshot,doc} = firestore;
-    const db = getFirestore();
-    this.unsubscribeBoard = onSnapshot(doc(db, Board.col, id), (doc)=>{
-      this.board = {id: doc.id, data: doc.data()}
-    })
+    this.subscriptionBoard = this.fire
+      .onGet<Board>(Board.col,id).subscribe(snap=>{
+        this.board = snap.doc;
+      });
   }
 
   getColumns(id: string){
-    const {getFirestore,query,collection,where,onSnapshot} = firestore;
-    const db = getFirestore();
-    const q = query(collection(db, Column.col), where("board_id", "==", id));
-    this.unsubscribeColumns = onSnapshot(q, (querySnapshot)=>{
-      this.columns = querySnapshot.docs.map(doc=>{
-        return {id: doc.id, data: doc.data()};
-      })
+    this.subscriptionColumns = this.fire.onList<Column>(Column.col, [{
+      field: 'board_id', op: '==', value: id
+    }]).subscribe(snap=>{
+      this.columns = snap.docs;
       this.columns.sort((a,b)=>a.data.index-b.data.index);
       // console.log(this.columns);
       this.columns.forEach(column=>{
-        if(!this.unsubscribeCards[column.id]) this.getCards(column);
+        if(!this.subscriptionCards[column.id]) this.getCards(column);
       })
 
-      if(querySnapshot.metadata.fromCache) return;
+      if(snap.metadata.fromCache) return;
       if(this.columns.length === 0) this.initColumns();
-      this.firestore.checkIndexes(this.columns, Column.col);
+      this.fire.checkIndexes(this.columns, Column.col);
     })
   }
 
   getCards(column: Column){
-    const {getFirestore,query,collection,where,onSnapshot} = firestore;
-    const db = getFirestore();
-    const q = query(collection(db, Card.col), where("column_id", "==", column.id));
-    this.unsubscribeCards[column.id] = onSnapshot(q, (querySnapshot)=>{
-      this.cards[column.id] = querySnapshot.docs.map(doc=>{
-        return {id: doc.id, data: doc.data()};
-      })
+    this.subscriptionCards[column.id] = this.fire.onList(Card.col, [{
+      field: 'column_id', op: '==', value: column.id
+    }]).subscribe(snap=>{
+      this.cards[column.id] = snap.docs;
       this.cards[column.id].sort((a,b)=>a.data.index-b.data.index);
       // console.log("Cards "+column.data.name, this.cards[column.id]);
 
-      if(querySnapshot.metadata.fromCache) return;
-      this.firestore.checkIndexes(this.cards[column.id], Card.col);
+      if(snap.metadata.fromCache) return;
+      this.fire.checkIndexes(this.cards[column.id], Card.col);
     })
   }
 
   // CREATE METHODS
 
   async createColumn(column: Column){
-    this.firestore.createDoc((column as any), Column.col)
+    this.fire.createDoc((column as any), Column.col)
   }
 
   async createCard(card: Card){
-    this.firestore.createDoc((card as any), Card.col)
+    this.fire.createDoc((card as any), Card.col)
   }
 
   // EDIT METHODS
@@ -159,7 +153,7 @@ export class BoardPage implements OnInit {
   async editColumn(column: Column){
     const name = await this.io.alertInput("Escolha um novo nome para o Status", column.data.name);
     if(name === "") return;
-    this.firestore.editDoc({
+    this.fire.editDoc({
       id: column.id,
       data: { name: name }
     }, Column.col);
@@ -168,7 +162,7 @@ export class BoardPage implements OnInit {
   async editCard(card: Card){
     const title = await this.io.alertInput("Digite o novo título da Atividade", card.data.title);
     if(title === "") return;
-    this.firestore.editDoc({
+    this.fire.editDoc({
       id: card.id,
       data: { title: title }
     }, Card.col);
@@ -177,7 +171,7 @@ export class BoardPage implements OnInit {
   async editBoard(){
     const name = await this.io.alertInput("Escolha um novo nome para o Projeto", this.board.data.name);
     if(name === "") return;
-    this.firestore.editDoc({
+    this.fire.editDoc({
       id: this.board.id,
       data: { name: name }
     }, Board.col);
@@ -186,17 +180,17 @@ export class BoardPage implements OnInit {
   // DELETE METHODS
 
   async deleteBoard(){
-    if(await this.firestore.removeDoc(this.board.id, Board.col, "Tem certeza que deseja excluir esse Projeto?")){
+    if(await this.fire.removeDoc(this.board.id, Board.col, "Tem certeza que deseja excluir esse Projeto?")){
       this.nav.back('boards');
     }
   }
 
   deleteColumn(id){
-    this.firestore.removeDoc(id, Column.col, "Tem certeza que deseja excluir esse Status?")
+    this.fire.removeDoc(id, Column.col, "Tem certeza que deseja excluir esse Status?")
   }
 
   deleteCard(id){
-    this.firestore.removeDoc(id, Card.col, "Tem certeza que deseja excluir essa Atividade?")
+    this.fire.removeDoc(id, Card.col, "Tem certeza que deseja excluir essa Atividade?")
   }
 
   // OTHER METHODS

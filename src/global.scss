@@ -43,6 +43,11 @@
 .half-padding{
   padding: 0.5em;
 }
+.ellipsis{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 [hoverlight]{
   :hover{
     background-color: rgba(var(--ion-color-light-rgb),0.25);

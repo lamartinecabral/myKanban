@@ -6,6 +6,8 @@
 // column 1 - N card
 // card 1 - N comment
 
+import { SnapshotMetadata } from "firebase/firestore";
+
 export class Board {
   static col = 'boards';
   id?: string;
@@ -55,4 +57,14 @@ export class Comment {
     card_id?: string,
     created?: string,
   }
+}
+
+export interface ListSnapshot<T>{
+  metadata?: SnapshotMetadata;
+  docs?: T[];
+}
+
+export interface GetSnapshot<T>{
+  metadata?: SnapshotMetadata;
+  doc?: T;
 }

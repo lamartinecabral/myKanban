@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { IoService } from './io.service';
 import * as firestore from 'firebase/firestore'
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { GetSnapshot, ListSnapshot } from '../utils/interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -59,6 +62,39 @@ export class FirestoreService {
       batch.update(doc(db, col_name, array[i].id), {index: i});
     }
     if(batch) await batch.commit();
+  }
+
+  onList<T>(colId, wheres?: [{field:string, op:firestore.WhereFilterOp, value:any}]): Observable<ListSnapshot<T>>{
+    const {getFirestore,query,collection,where,onSnapshot} = firestore;
+    const db = getFirestore();
+    const q = query(
+      collection(db, colId),
+      ...(wheres || ([] as any))
+        .map(w=>where(w.field,w.op,w.value))
+    );
+    return new Observable<firestore.QuerySnapshot<firestore.DocumentData>>(obs => {
+      return onSnapshot(q,obs);
+    }).pipe(map(querySnapshot=>{
+      return {
+        metadata: querySnapshot.metadata,
+        docs: querySnapshot.docs.map(doc=>{
+          return {id: doc.id, data: doc.data()};
+        })
+      } as unknown;
+    }));
+  }
+
+  onGet<T>(colId: string, docId: string): Observable<GetSnapshot<T>>{
+    const {getFirestore,onSnapshot,doc} = firestore;
+    const db = getFirestore();
+    return new Observable<firestore.DocumentSnapshot>(obs => {
+      return onSnapshot(doc(db, colId, docId), obs);
+    }).pipe(map(snapshot=>{
+      return {
+        metadata: snapshot.metadata,
+        doc: { id: snapshot.id, data: snapshot.data() }
+      } as unknown;
+    }))
   }
   
 }
