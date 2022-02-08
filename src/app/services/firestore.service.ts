@@ -49,4 +49,16 @@ export class FirestoreService {
     }
   }
 
+  async checkIndexes(array: any[], col_name: string){
+    const {getFirestore,writeBatch,doc} = firestore;
+    const db = getFirestore();
+    let batch: firestore.WriteBatch;
+    for(let i=0; i<array.length; i++){
+      if(array[i].data.index === i) continue;
+      if(!batch) batch = writeBatch(db);
+      batch.update(doc(db, col_name, array[i].id), {index: i});
+    }
+    if(batch) await batch.commit();
+  }
+  
 }

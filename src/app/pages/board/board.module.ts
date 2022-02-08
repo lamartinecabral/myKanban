@@ -7,16 +7,18 @@ import { IonicModule } from '@ionic/angular';
 import { BoardPageRoutingModule } from './board-routing.module';
 
 import { BoardPage } from './board.page';
-import { LimitPipe } from 'src/app/pipes/limit.pipe';
-import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
+import { ComponentsModule } from 'src/app/components/components.module';
+import { PipesModule } from 'src/app/pipes/pipes.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    BoardPageRoutingModule
+    BoardPageRoutingModule,
+    ComponentsModule,
+    PipesModule,
   ],
-  declarations: [BoardPage, LimitPipe, BackButtonComponent]
+  declarations: [BoardPage]
 })
 export class BoardPageModule {}

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NavController } from '@ionic/angular';
+import { NavService } from 'src/app/services/nav.service';
 
 @Component({
   selector: 'app-back-button',
@@ -11,19 +12,14 @@ export class BackButtonComponent implements OnInit {
   // @Output() click2 = new EventEmitter(); // usage: click2.emit()
   @Input() defaultHref: string
 
-  mode = 'default';
-
   constructor(
-    public navCtrl: NavController,
+    public nav: NavService
   ) { }
 
   ngOnInit() {}
 
   back(){
-    if(window.history.length > 1)
-      this.navCtrl.back();
-    else
-      this.navCtrl.navigateBack(this.defaultHref);
+    this.nav.back(this.defaultHref);
   }
 
 }

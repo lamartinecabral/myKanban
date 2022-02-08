@@ -4,6 +4,7 @@ import * as firestore from 'firebase/firestore';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirestoreService } from 'src/app/services/firestore.service';
 import { IoService } from 'src/app/services/io.service';
+import { NavService } from 'src/app/services/nav.service';
 import { Board, Column, Card } from 'src/app/utils/interfaces';
 
 @Component({
@@ -24,7 +25,7 @@ export class BoardPage implements OnInit {
 
   constructor(
     public route: ActivatedRoute,
-    public router: Router,
+    public nav: NavService,
     public auth: AuthService,
     public firestore: FirestoreService,
     public io: IoService,
@@ -123,7 +124,7 @@ export class BoardPage implements OnInit {
 
       if(querySnapshot.metadata.fromCache) return;
       if(this.columns.length === 0) this.initColumns();
-      this.checkIndexes(this.columns, Column.col);
+      this.firestore.checkIndexes(this.columns, Column.col);
     })
   }
 
@@ -139,7 +140,7 @@ export class BoardPage implements OnInit {
       // console.log("Cards "+column.data.name, this.cards[column.id]);
 
       if(querySnapshot.metadata.fromCache) return;
-      this.checkIndexes(this.cards[column.id], Card.col);
+      this.firestore.checkIndexes(this.cards[column.id], Card.col);
     })
   }
 
@@ -185,8 +186,9 @@ export class BoardPage implements OnInit {
   // DELETE METHODS
 
   async deleteBoard(){
-    if(await this.firestore.removeDoc(this.board.id, Board.col, "Tem certeza que deseja excluir esse Projeto?"))
-      this.router.navigateByUrl('boards');
+    if(await this.firestore.removeDoc(this.board.id, Board.col, "Tem certeza que deseja excluir esse Projeto?")){
+      this.nav.back('boards');
+    }
   }
 
   deleteColumn(id){
@@ -199,18 +201,6 @@ export class BoardPage implements OnInit {
 
   // OTHER METHODS
 
-  async checkIndexes(array: any[], col_name: string){
-    const {getFirestore,writeBatch,doc} = firestore;
-    const db = getFirestore();
-    let batch: firestore.WriteBatch;
-    for(let i=0; i<array.length; i++){
-      if(array[i].data.index === i) continue;
-      if(!batch) batch = writeBatch(db);
-      batch.update(doc(db, col_name, array[i].id), {index: i});
-    }
-    if(batch) await batch.commit();
-  }
-  
   async initColumns(){
     const {getFirestore,writeBatch,doc,collection} = firestore;
     const db = getFirestore();
@@ -231,11 +221,7 @@ export class BoardPage implements OnInit {
 
   openCard(card: Card){
     const board_id = this.route.snapshot.params.id;
-    this.router.navigateByUrl(`boards/${board_id}/${card.id}`);
-  }
-
-  back(){
-    this.router.navigateByUrl(`boards`, {replaceUrl: true});
+    this.nav.forward(`boards/${board_id}/${card.id}`);
   }
 
 }

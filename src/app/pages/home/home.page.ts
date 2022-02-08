@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import * as firestore from "firebase/firestore";
 import { Board } from 'src/app/utils/interfaces';
 import { IoService } from 'src/app/services/io.service';
 import { FirestoreService } from 'src/app/services/firestore.service';
+import { NavService } from 'src/app/services/nav.service';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +19,7 @@ export class HomePage {
   unsubscribe;
 
   constructor(
-    public router: Router,
+    public nav: NavService,
     public auth: AuthService,
     public alertCtrl: AlertController,
     public io: IoService,
@@ -37,7 +37,7 @@ export class HomePage {
 
   async logout(){
     await this.auth.logout();
-    this.router.navigateByUrl('',{replaceUrl: true});
+    this.nav.go('', true);
   }
 
   async newBoard(){
@@ -47,7 +47,7 @@ export class HomePage {
       name: name,
       uid: this.auth.user.uid,
       created: new Date().toISOString(),
-      index: this.boards.length,
+      index: -1,
     }});
   }
 
@@ -63,16 +63,16 @@ export class HomePage {
       this.boards = querySnapshot.docs.map(doc=>{
         return {id: doc.id, data: doc.data()};
       });
-      this.boards.sort((a,b)=>b.data.index-a.data.index);
+      this.boards.sort((a,b)=>a.data.index-b.data.index);
       // console.log(this.boards);
       
       if(querySnapshot.metadata.fromCache) return;
-      this.checkIndexes();
+      this.firestore.checkIndexes(this.boards, Board.col);
     })
   }
 
   open(id){
-    this.router.navigateByUrl('boards/'+id);
+    this.nav.forward('boards/'+id);
   }
   
   // busca e corrige inconsistencias nos indices

@@ -7,16 +7,18 @@ import { IonicModule } from '@ionic/angular';
 import { CardPageRoutingModule } from './card-routing.module';
 
 import { CardPage } from './card.page';
-import { FnPipe } from 'src/app/pipes/fn.pipe';
-import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
+import { ComponentsModule } from 'src/app/components/components.module';
+import { PipesModule } from 'src/app/pipes/pipes.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CardPageRoutingModule
+    CardPageRoutingModule,
+    ComponentsModule,
+    PipesModule,
   ],
-  declarations: [CardPage, FnPipe, BackButtonComponent]
+  declarations: [CardPage]
 })
 export class CardPageModule {}

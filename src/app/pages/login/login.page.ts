@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { IoService } from 'src/app/services/io.service';
+import { NavService } from 'src/app/services/nav.service';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +17,7 @@ export class LoginPage implements OnInit {
 
   constructor(
     public auth: AuthService,
-    public router: Router,
+    public nav: NavService,
     public io: IoService,
   ) {
     this.setupForms();
@@ -44,7 +44,7 @@ export class LoginPage implements OnInit {
         console.error(res.error.message);
         this.io.toast(res.error.message);
       } else {
-        this.router.navigateByUrl('',{replaceUrl: true});
+        this.nav.go('', true);
       }
     })
   }
@@ -62,7 +62,7 @@ export class LoginPage implements OnInit {
         console.error(res.error.message);
         this.io.toast(res.error.message);
       } else {
-        this.router.navigateByUrl('',{replaceUrl: true});
+        this.nav.go('', true);
       }
     })
   }
