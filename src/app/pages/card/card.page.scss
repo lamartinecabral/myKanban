@@ -62,6 +62,9 @@ section.two{
         --padding-end: 0;
         --padding-start: 0;
       }
+      .comment{
+        user-select: text;
+      }
     }
   }
 }

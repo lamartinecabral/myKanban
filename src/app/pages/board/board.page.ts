@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as firestore from 'firebase/firestore';
-import { Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirestoreService } from 'src/app/services/firestore.service';
 import { IoService } from 'src/app/services/io.service';
@@ -115,11 +116,11 @@ export class BoardPage implements OnInit {
       this.columns = snap.docs;
       this.columns.sort((a,b)=>a.data.index-b.data.index);
       // console.log(this.columns);
+      if(snap.metadata.fromCache) return;
+      
       this.columns.forEach(column=>{
         if(!this.subscriptionCards[column.id]) this.getCards(column);
       })
-
-      if(snap.metadata.fromCache) return;
       if(this.columns.length === 0) this.initColumns();
       this.fire.checkIndexes(this.columns, Column.col);
     })

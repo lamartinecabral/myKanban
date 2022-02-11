@@ -33,7 +33,7 @@
       <ion-card *ngFor="let comment of comments" class="half-margin">
         <ion-card-content>
           <div>
-            <div>{{comment.data.text}}</div>
+            <div class="comment">{{comment.data.text}}</div>
             <div>
               <ion-button fill="clear" color="danger" (click)="deleteComment(comment.id)">
                 <ion-icon slot="icon-only" name="trash"></ion-icon>

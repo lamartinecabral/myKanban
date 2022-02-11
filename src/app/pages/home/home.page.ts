@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 export class HomePage {
 
   boards: Board[];
+  inviteBoards: Board[];
 
   subscription: Subscription;
 
@@ -33,6 +34,7 @@ export class HomePage {
 
   ngOnInit(){
     this.getBoards();
+    this.getInviteBoards();
   }
 
   async logout(){
@@ -65,6 +67,20 @@ export class HomePage {
       
       if(snap.metadata.fromCache) return;
       this.fire.checkIndexes(this.boards, Board.col);
+    })
+  }
+
+  getInviteBoards(){
+    this.subscription = this.fire.onList<Board>(Board.col, [{
+      field: 'guests', op: 'array-contains', value: this.auth.user.email
+    }]).subscribe(snap=>{
+      this.inviteBoards = snap.docs;
+      this.inviteBoards.sort((a,b)=>{
+        if(a.data.created > b.data.created) return -1;
+        if(a.data.created < b.data.created) return +1;
+        return 0;
+      });
+      console.log(this.inviteBoards);
     })
   }
 

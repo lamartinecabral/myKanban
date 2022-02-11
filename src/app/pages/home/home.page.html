@@ -24,5 +24,16 @@
         </ion-card-subtitle>
       </ion-card-header>
     </ion-card>
+    <ion-card *ngFor="let board of inviteBoards" class="board" tappable (click)="open(board.id)">
+      <div class="boardimg">
+        <div></div><div></div>
+        <div class="guest">Convidado</div>
+      </div>
+      <ion-card-header>
+        <ion-card-subtitle class="ellipsis">
+          {{board.data.name}}
+        </ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
   </div>
 </ion-content>

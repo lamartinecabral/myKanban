@@ -7,7 +7,7 @@ import * as firebaseAuth from "firebase/auth";
 })
 export class AuthService {
 
-  user: any;
+  user: firebaseAuth.User;
   user$: ReplaySubject<any> = new ReplaySubject(1);
 
   constructor() {
@@ -36,49 +36,13 @@ export class AuthService {
   signIn(email,password){
     const { getAuth, signInWithEmailAndPassword } = firebaseAuth;
     const auth = getAuth();
-    return signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in 
-        const user = userCredential.user;
-        // ...
-        return {
-          user: user,
-          error: null
-        };
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        return {
-          user: null,
-          error: error
-        };
-      });
+    return signInWithEmailAndPassword(auth, email, password);
   }
 
   createUser(email,password){
     const { getAuth, createUserWithEmailAndPassword } = firebaseAuth;
     const auth = getAuth();
-    return createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in 
-        const user = userCredential.user;
-        // ...
-        return {
-          user: user,
-          error: null
-        };
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ..
-        console.error(error);
-        return {
-          user: null,
-          error: error
-        };
-      });
+    return createUserWithEmailAndPassword(auth, email, password);
   }
 
   logout(){
@@ -90,19 +54,7 @@ export class AuthService {
   resetPassword(email){
     const { getAuth, sendPasswordResetEmail } = firebaseAuth;
     const auth = getAuth();
-    return sendPasswordResetEmail(auth, email)
-      .then((userCredential) => {
-        return {
-          error: null
-        };
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        return {
-          error: error
-        };
-      });
+    return sendPasswordResetEmail(auth, email);
   }
   
 }

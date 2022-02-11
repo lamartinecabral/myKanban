@@ -3,34 +3,55 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /{colId}/{docId} {
 
-      allow get: if 
+      allow get: if canRead()
+      
+      allow list: if canRead()
+      
+      allow create: if
         colId in ['boards','columns','cards','comments'] &&
         request.auth != null &&
-        resource.data.uid == request.auth.uid
+        request.resource.data.uid == request.auth.uid &&
+        request.resource.data.keys().hasOnly(validKeys())
       
-      allow list: if 
+      allow update: if
         colId in ['boards','columns','cards','comments'] &&
-        request.auth != null && (
-          colId == 'boards' && request.auth.uid == resource.data.uid ||
-          colId == 'columns' && request.auth.uid == get(/databases/$(database)/documents/boards/$(resource.data.board_id)).data.uid ||
-          colId == 'cards' && request.auth.uid == get(/databases/$(database)/documents/columns/$(resource.data.column_id)).data.uid ||
-          colId == 'comments' && request.auth.uid == get(/databases/$(database)/documents/cards/$(resource.data.card_id)).data.uid
-        )
-      
-      allow create: if 
-        colId in ['boards','columns','cards','comments'] &&
-        request.auth != null &&
-        request.resource.data.uid == request.auth.uid
-      
-      allow update: if 
-        colId in ['boards','columns','cards','comments'] &&
-        request.auth != null &&
-        request.resource.data.uid == resource.data.uid
+        canRead() &&
+        request.resource.data.uid == resource.data.uid &&
+        request.resource.data.keys().hasOnly(validKeys())
 
-      allow delete: if 
-        colId in ['boards','columns','cards','comments'] &&
-        request.auth != null &&
-        resource.data.uid == request.auth.uid
+      allow delete: if canDelete()
+      
+      function getDoc(coll,docu){
+        return get(/databases/$(database)/documents/$(coll)/$(docu)).data
+      }
+      
+      function isOwner(){ // sou o dono se eu for o dono do board
+        return colId in ['boards','columns','cards','comments'] &&
+          request.auth != null && (
+            colId == 'boards' && request.auth.uid == resource.data.uid ||
+            colId == 'columns' && request.auth.uid == getDoc('boards',resource.data.board_id).uid ||
+            colId == 'cards' && request.auth.uid == getDoc('boards',getDoc('columns',resource.data.column_id).board_id).uid ||
+            colId == 'comments' && request.auth.uid == getDoc('boards',getDoc('cards',resource.data.card_id).board_id).uid
+          )
+      }
+      function isGuest(){ // sou convidado se meu email estiver em guests do board
+        return colId in ['boards','columns','cards','comments'] &&
+          request.auth != null && (
+            colId == 'boards' && request.auth.token.email in resource.data.guests ||
+            colId == 'columns' && request.auth.token.email in getDoc('boards',resource.data.board_id).guests ||
+            colId == 'cards' && request.auth.token.email in getDoc('boards',getDoc('columns',resource.data.column_id).board_id).guests ||
+            colId == 'comments' && request.auth.token.email in getDoc('boards',getDoc('cards',resource.data.card_id).board_id).guests
+          )
+      }
+      function canRead(){
+        return isOwner() || isGuest()
+      }
+      function canDelete(){
+        return colId == 'boards' && isOwner() || colId != 'boards' && canRead()
+      }
+      function validKeys(){
+        return ['name', 'uid', 'created', 'index', 'guests', 'luuid', 'board_id', 'title', 'text', 'column_id', 'author', 'card_id'];
+      }
       
     }
   }

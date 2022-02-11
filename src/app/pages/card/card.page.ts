@@ -45,11 +45,12 @@ export class CardPage implements OnInit {
     this.subscriptionCard = this.fire.onGet(Card.col, id)
       .subscribe(snap=>{
         this.card = snap.doc;
+        this.text = this.card.data.text;
       })
   }
 
   async editCardTitle(){
-    const title = await this.io.alertInput("Digite o novo título da Atividade");
+    const title = await this.io.alertInput("Digite o novo título da Atividade", this.card.data.title);
     if(title === "") return;
     this.fire.editDoc({
       id: this.card.id,
@@ -73,6 +74,7 @@ export class CardPage implements OnInit {
     if(text === "") return;
     this.fire.createDoc({data: {
       text: text,
+      author: this.auth.user.email,
       uid: this.auth.user.uid,
       board_id: this.card.data.board_id,
       column_id: this.card.data.column_id,

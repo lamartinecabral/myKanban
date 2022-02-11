@@ -28,4 +28,12 @@
     width: calc(var(--size) * 0.35);
     height: calc(var(--size) * 0.6);
   }
+  .guest{
+    position: absolute;
+    padding: 0.5em;
+    background: var(--ion-color-secondary);
+    font-weight: bold;
+    color: var(--ion-color-light);
+    border-radius: 0 0 0.5em 0;
+  }
 }

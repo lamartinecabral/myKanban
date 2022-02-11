@@ -17,6 +17,7 @@ export class Board {
     created?: string,
     index?: number,
     guests?: string[],
+    luuid? : string, // last update user id
   }
 }
 
@@ -29,6 +30,7 @@ export class Column {
     board_id?: string,
     created?: string,
     index?: number,
+    luuid? : string, // last update user id
   }
 }
 
@@ -43,6 +45,7 @@ export class Card {
     column_id?: string,
     created?: string,
     index?: number,
+    luuid? : string, // last update user id
   }
 }
 
@@ -51,11 +54,13 @@ export class Comment {
   id?: string;
   data?: {
     text?: string,
+    author?: string,
     uid?: string,
     board_id?: string,
     column_id?: string,
     card_id?: string,
     created?: string,
+    luuid? : string, // last update user id
   }
 }
 

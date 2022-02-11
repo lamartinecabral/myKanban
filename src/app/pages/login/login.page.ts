@@ -39,13 +39,11 @@ export class LoginPage implements OnInit {
     this.auth.signIn(
       this.loginForm.value.email.trim().toLowerCase(),
       this.loginForm.value.password
-    ).then(res=>{
-      if(res.error){
-        console.error(res.error.message);
-        this.io.toast(res.error.message);
-      } else {
-        this.nav.go('', true);
-      }
+    ).then(()=>{
+      this.nav.go('', true);
+    }).catch(error=>{
+      console.error(error.message);
+      this.io.toast(error.message);
     })
   }
 
@@ -57,13 +55,22 @@ export class LoginPage implements OnInit {
     this.auth.createUser(
       this.createForm.value.email.trim().toLowerCase(),
       this.createForm.value.password
-    ).then(res=>{
-      if(res.error){
-        console.error(res.error.message);
-        this.io.toast(res.error.message);
-      } else {
-        this.nav.go('', true);
-      }
+    ).then(()=>{
+      this.nav.go('', true);
+    }).catch(error=>{
+      console.error(error.message);
+      this.io.toast(error.message);
+    })
+  }
+
+  async resetPassword(){
+    const email = this.loginForm.value.email;
+    this.auth.resetPassword(email)
+    .then(()=>{
+      this.io.toast("Um link de reset foi enviado para o seu e-mail");
+    }).catch(error=>{
+      console.error(error.message);
+      this.io.toast(error.message);
     })
   }
 
@@ -94,18 +101,6 @@ export class LoginPage implements OnInit {
     return email && password && password === confirm ?
       null :
       { invalid: true };
-  }
-
-  async resetPassword(){
-    const email = this.loginForm.value.email;
-    this.auth.resetPassword(email).then(res=>{
-      if(res.error){
-        console.error(res.error.message);
-        this.io.toast(res.error.message);
-      } else {
-        this.io.toast("Um link de reset foi enviado para o seu e-mail");
-      }
-    })
   }
 
 }
