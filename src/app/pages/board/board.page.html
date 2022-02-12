@@ -11,12 +11,46 @@
         <ion-icon name="create"></ion-icon>
       </button>
     </ion-title>
+
+    <!-- DROPDOWN MENU -->
     <ion-buttons slot="end">
-      <ion-button (click)="deleteBoard()" fill="solid" color="danger">
-        Excluir Projeto
-        <ion-icon slot="end" name="trash"></ion-icon>
+      <ion-button id="trigger-button" *ngIf="isOwner !== undefined">
+        <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
       </ion-button>
+      <ion-popover trigger="trigger-button" dismissOnSelect>
+        <ng-template>
+          <ion-content>
+
+            <ion-list lines="none" *ngIf="isOwner">
+              <ion-item button (click)="invite()">
+                <ion-label color="primary">Convidar Alguém</ion-label>
+                <ion-icon color="primary" name="person-add" slot="end"></ion-icon>
+              </ion-item>
+              <ion-item button (click)="deleteBoard()">
+                <ion-label color="danger">Excluir Projeto</ion-label>
+                <ion-icon color="danger" name="trash" slot="end"></ion-icon>
+              </ion-item>
+              <ion-item-divider *ngIf="board?.data?.guests?.length">
+                <ion-label>Convidados:</ion-label>
+              </ion-item-divider>
+              <ion-item *ngFor="let guest of board?.data?.guests" button (click)="uninvite(guest)">
+                <ion-label>{{guest}}</ion-label>
+                <ion-icon name="person-remove" slot="end"></ion-icon>
+              </ion-item>
+            </ion-list>
+            
+            <ion-list lines="none" *ngIf="!isOwner">
+              <ion-item button (click)="leave()">
+                <ion-label color="danger">Sair do Projeto</ion-label>
+                <ion-icon color="danger" name="person-remove" slot="end"></ion-icon>
+              </ion-item>
+            </ion-list>
+
+          </ion-content>
+        </ng-template>
+      </ion-popover>
     </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 

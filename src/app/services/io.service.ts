@@ -13,7 +13,7 @@ export class IoService {
 
   async alertConfirm(message){
     const alert = await this.alertCtrl.create({
-      header: message,
+      subHeader: message,
       buttons: [
         "Não",
         {

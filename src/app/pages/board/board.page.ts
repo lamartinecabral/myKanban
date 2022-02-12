@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as firestore from 'firebase/firestore';
-import { of, Subscription } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirestoreService } from 'src/app/services/firestore.service';
 import { IoService } from 'src/app/services/io.service';
@@ -24,6 +23,8 @@ export class BoardPage implements OnInit {
 
   cards: {[column_id: string]: Card[]} = {};
   subscriptionCards: {[column_id: string]: Subscription} = {};
+
+  isOwner
 
   constructor(
     public route: ActivatedRoute,
@@ -106,6 +107,7 @@ export class BoardPage implements OnInit {
     this.subscriptionBoard = this.fire
       .onGet<Board>(Board.col,id).subscribe(snap=>{
         this.board = snap.doc;
+        this.isOwner = this.board.data.uid == this.auth.user.uid;
       });
   }
 
@@ -115,13 +117,13 @@ export class BoardPage implements OnInit {
     }]).subscribe(snap=>{
       this.columns = snap.docs;
       this.columns.sort((a,b)=>a.data.index-b.data.index);
-      // console.log(this.columns);
-      if(snap.metadata.fromCache) return;
+      console.log(this.columns);
       
       this.columns.forEach(column=>{
         if(!this.subscriptionCards[column.id]) this.getCards(column);
       })
       if(this.columns.length === 0) this.initColumns();
+      if(snap.metadata.fromCache) return;
       this.fire.checkIndexes(this.columns, Column.col);
     })
   }
@@ -132,10 +134,13 @@ export class BoardPage implements OnInit {
     }]).subscribe(snap=>{
       this.cards[column.id] = snap.docs;
       this.cards[column.id].sort((a,b)=>a.data.index-b.data.index);
-      // console.log("Cards "+column.data.name, this.cards[column.id]);
+      console.log("Cards "+column.data.name, this.cards[column.id]);
 
       if(snap.metadata.fromCache) return;
       this.fire.checkIndexes(this.cards[column.id], Card.col);
+    },(err)=>{
+      console.error(err);
+      console.log(JSON.stringify(err));
     })
   }
 
@@ -217,6 +222,34 @@ export class BoardPage implements OnInit {
   openCard(card: Card){
     const board_id = this.route.snapshot.params.id;
     this.nav.forward(`boards/${board_id}/${card.id}`);
+  }
+
+  async invite(){
+    let email = await this.io.alertInput(`Digite o email da pessoa que você quer convidar`);
+    if(!email) return;
+    this.fire.editDoc({
+      id: this.board.id,
+      data: {guests: firestore.arrayUnion(email)}
+    },Board.col);
+  }
+
+  async uninvite(email){
+    let ans = await this.io.alertConfirm(`Tem certeza que deseja desconvidar ${email}?`);
+    if(!ans) return;
+    this.fire.editDoc({
+      id: this.board.id,
+      data: {guests: firestore.arrayRemove(email)}
+    },Board.col);
+  }
+
+  async leave(){
+    let ans = await this.io.alertConfirm(`Tem certeza que deseja sair desse Projeto?`);
+    if(!ans) return;
+    await this.fire.editDoc({
+      id: this.board.id,
+      data: {guests: firestore.arrayRemove(this.auth.user.email)}
+    },Board.col);
+    this.nav.back('boards');
   }
 
 }
