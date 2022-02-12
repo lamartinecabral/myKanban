@@ -15,14 +15,14 @@ export class NavService {
   ) {
     window.addEventListener('popstate', (event) => {
       this.stack.pop();
-      console.log(this.stack);
+      // console.log(this.stack);
     });
   }
 
   forward(url: string){
     this.stack.push(window.location.pathname);
     this.navCtrl.navigateForward(url);
-    console.log(this.stack);
+    // console.log(this.stack);
   }
 
   back(defaultUrl: string){
@@ -30,13 +30,13 @@ export class NavService {
       this.navCtrl.back();
     } else {
       this.navCtrl.navigateBack(defaultUrl, {replaceUrl: true});
-      console.log(this.stack);
+      // console.log(this.stack);
     }
   }
 
   go(url: string, replace?: boolean){
     this.router.navigateByUrl(url, {replaceUrl: !!replace})
-    console.log(this.stack);
+    // console.log(this.stack);
   }
 
 }

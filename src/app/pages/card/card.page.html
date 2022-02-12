@@ -32,12 +32,11 @@
       <div class="label">Comentários:</div>
       <ion-card *ngFor="let comment of comments" class="half-margin">
         <ion-card-content>
-          <div>
-            <div class="comment">{{comment.data.text}}</div>
-            <div>
-              <ion-button fill="clear" color="danger" (click)="deleteComment(comment.id)">
-                <ion-icon slot="icon-only" name="trash"></ion-icon>
-              </ion-button>
+          <div class="comment">
+            <div class="text">{{comment.data.text}}</div>
+            <div class="details">
+              <div>{{comment.data.author || 'Alguém'}} • {{comment.data.created | moment | fn:'fromNow'}}</div>
+              <button (click)="deleteComment(comment.id)">Excluir Comentário</button>
             </div>
           </div>
         </ion-card-content>

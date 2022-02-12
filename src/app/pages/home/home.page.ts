@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
-import { Board } from 'src/app/utils/interfaces';
+import { Board, Column } from 'src/app/utils/interfaces';
 import { IoService } from 'src/app/services/io.service';
 import { FirestoreService } from 'src/app/services/firestore.service';
 import { NavService } from 'src/app/services/nav.service';
 import { Subscription } from 'rxjs';
+import * as firestore from 'firebase/firestore'
 
 @Component({
   selector: 'app-home',
@@ -53,8 +54,33 @@ export class HomePage {
     }});
   }
 
-  async createBoard(board: Board){
+  async createBoard2(board: Board){
     this.fire.createDoc((board as any), Board.col)
+  }
+
+  async createBoard(board: Board){
+    let log: any = {}
+    const {getFirestore,writeBatch,doc,collection} = firestore;
+    const db = getFirestore();
+    const batch = writeBatch(db);
+    const boardRef = doc(collection(db, Board.col));
+    log[board.data.name] = boardRef.id;
+    batch.set(boardRef, board.data);
+    ['A FAZER', 'FAZENDO', 'FEITO'].map((name,index)=>{
+      return {data: {
+        name: name,
+        uid: this.auth.user.uid,
+        board_id: boardRef.id,
+        created: new Date().toISOString(),
+        index: index,
+      }}
+    }).forEach((column: Column, index)=>{
+      const columnRef = doc(collection(db, Column.col));
+      log[column.data.name] = columnRef.id;
+      batch.set(columnRef, column.data);
+    })
+    await batch.commit();
+    console.log("Documents created with ID: ",log);
   }
 
   getBoards(){
@@ -80,7 +106,7 @@ export class HomePage {
         if(a.data.created < b.data.created) return +1;
         return 0;
       });
-      console.log(this.inviteBoards);
+      // console.log(this.inviteBoards);
     })
   }
 

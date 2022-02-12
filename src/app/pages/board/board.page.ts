@@ -18,7 +18,7 @@ export class BoardPage implements OnInit {
   board: Board;
   subscriptionBoard: Subscription;
 
-  columns: any[];
+  columns: Column[];
   subscriptionColumns: Subscription;
 
   cards: {[column_id: string]: Card[]} = {};
@@ -107,7 +107,8 @@ export class BoardPage implements OnInit {
     this.subscriptionBoard = this.fire
       .onGet<Board>(Board.col,id).subscribe(snap=>{
         this.board = snap.doc;
-        this.isOwner = this.board.data.uid == this.auth.user.uid;
+        try{ this.isOwner = this.board.data.uid == this.auth.user.uid; }
+        catch(e){}
       });
   }
 
@@ -117,12 +118,11 @@ export class BoardPage implements OnInit {
     }]).subscribe(snap=>{
       this.columns = snap.docs;
       this.columns.sort((a,b)=>a.data.index-b.data.index);
-      console.log(this.columns);
+      // console.log(this.columns);
       
       this.columns.forEach(column=>{
         if(!this.subscriptionCards[column.id]) this.getCards(column);
       })
-      if(this.columns.length === 0) this.initColumns();
       if(snap.metadata.fromCache) return;
       this.fire.checkIndexes(this.columns, Column.col);
     })
@@ -134,13 +134,10 @@ export class BoardPage implements OnInit {
     }]).subscribe(snap=>{
       this.cards[column.id] = snap.docs;
       this.cards[column.id].sort((a,b)=>a.data.index-b.data.index);
-      console.log("Cards "+column.data.name, this.cards[column.id]);
+      // console.log("Cards "+column.data.name, this.cards[column.id]);
 
       if(snap.metadata.fromCache) return;
       this.fire.checkIndexes(this.cards[column.id], Card.col);
-    },(err)=>{
-      console.error(err);
-      console.log(JSON.stringify(err));
     })
   }
 
@@ -186,9 +183,18 @@ export class BoardPage implements OnInit {
   // DELETE METHODS
 
   async deleteBoard(){
-    if(await this.fire.removeDoc(this.board.id, Board.col, "Tem certeza que deseja excluir esse Projeto?")){
-      this.nav.back('boards');
-    }
+    const ans = await this.io.alertConfirm("Tem certeza que deseja excluir esse Projeto?");
+    if(!ans) return;
+    const {getFirestore,writeBatch,doc,collection} = firestore;
+    const db = getFirestore();
+    const batch = writeBatch(db);
+    batch.delete(doc(db, Board.col, this.board.id));
+    this.columns.forEach(column=>{
+      batch.delete(doc(db, Column.col, column.id));
+    })
+    await batch.commit();
+    console.log("Documents batch deleted successfully");
+    this.nav.back('boards');
   }
 
   deleteColumn(id){
@@ -200,24 +206,6 @@ export class BoardPage implements OnInit {
   }
 
   // OTHER METHODS
-
-  async initColumns(){
-    const {getFirestore,writeBatch,doc,collection} = firestore;
-    const db = getFirestore();
-    const batch = writeBatch(db);
-    ['A FAZER', 'FAZENDO', 'FEITO'].map((name,index)=>{
-      return {data: {
-        name: name,
-        uid: this.auth.user.uid,
-        board_id: this.board.id,
-        created: new Date().toISOString(),
-        index: index,
-      }}
-    }).forEach((column: Column)=>{
-      batch.set(doc(collection(db, Column.col)), column.data);
-    })
-    await batch.commit();
-  }
 
   openCard(card: Card){
     const board_id = this.route.snapshot.params.id;

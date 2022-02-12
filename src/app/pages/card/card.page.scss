@@ -55,15 +55,20 @@ section.one{
 }
 section.two{
   ion-card{
-    ion-card-content > div{
-      display: flex;
-      justify-content: space-between;
-      ion-button{
-        --padding-end: 0;
-        --padding-start: 0;
-      }
-      .comment{
+    .comment{
+      .text{
         user-select: text;
+      }
+      .details{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--ion-color-primary);
+        margin-top: 0.5em;
+        button{
+          background: transparent;
+          color: var(--ion-color-danger);
+        }
       }
     }
   }

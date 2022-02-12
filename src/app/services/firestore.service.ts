@@ -28,8 +28,10 @@ export class FirestoreService {
         })
       );
       console.log("Document created with ID: ", docRef.id, docum.data);
+      return docRef.id;
     } catch (e) {
       console.error("Error adding document: ", e);
+      throw e;
     }
   }
 
@@ -62,7 +64,9 @@ export class FirestoreService {
       console.log("Document updated:", d);
     } catch (e) {
       console.error("Error updating document:", e);
+      throw e;
     }
+    return true;
   }
 
   async checkIndexes(array: any[], col_name: string){
