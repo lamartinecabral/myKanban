@@ -10,7 +10,7 @@ export class FnPipe implements PipeTransform {
    * returns: R$ 1,50
    * is equivalent to: (1.5).toLocaleString('pt-br',{style:'currency',currency:'BRL'})
    * @param value The value to be piped
-   * @param args The second and subsequent arguments are the method's arguments.
+   * @param args the method's name and arguments. return value[args[0]](args[1], args[2], ...)
    */
   transform(value: any, ...args: any[]): any {
     if(!value) return value;

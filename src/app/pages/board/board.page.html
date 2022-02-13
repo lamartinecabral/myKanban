@@ -13,8 +13,8 @@
     </ion-title>
 
     <!-- DROPDOWN MENU -->
-    <ion-buttons slot="end">
-      <ion-button id="trigger-button" *ngIf="isOwner !== undefined">
+    <ion-buttons slot="end" *ngIf="isOwner !== undefined">
+      <ion-button id="trigger-button">
         <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
       </ion-button>
       <ion-popover trigger="trigger-button" dismissOnSelect>
